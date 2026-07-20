@@ -1,0 +1,178 @@
+{
+  "_nota": "Payloads de prueba para el webhook POST /lapasteleria-whatsapp-v2. Teléfonos ficticios. Cambiar wamid en cada envío salvo en la prueba de duplicados.",
+
+  "01_texto_saludo": {
+    "object": "whatsapp_business_account",
+    "entry": [{
+      "id": "WABA_ID_TEST",
+      "changes": [{
+        "field": "messages",
+        "value": {
+          "messaging_product": "whatsapp",
+          "metadata": { "display_phone_number": "56900000000", "phone_number_id": "PHONE_NUMBER_ID_TEST" },
+          "contacts": [{ "profile": { "name": "Cliente Prueba" }, "wa_id": "56900000001" }],
+          "messages": [{
+            "from": "56900000001",
+            "id": "wamid.TEST-SALUDO-0001",
+            "timestamp": "1753000000",
+            "type": "text",
+            "text": { "body": "Hola! ¿Qué tortas tienen?" }
+          }]
+        }
+      }]
+    }]
+  },
+
+  "02_texto_pedido_completo": {
+    "object": "whatsapp_business_account",
+    "entry": [{
+      "id": "WABA_ID_TEST",
+      "changes": [{
+        "field": "messages",
+        "value": {
+          "messaging_product": "whatsapp",
+          "metadata": { "display_phone_number": "56900000000", "phone_number_id": "PHONE_NUMBER_ID_TEST" },
+          "messages": [{
+            "from": "56900000001",
+            "id": "wamid.TEST-PEDIDO-0002",
+            "timestamp": "1753000100",
+            "type": "text",
+            "text": { "body": "Quiero una torta Amor de mango para 20 personas, para el viernes a las 17:00. Soy Carla. Confirmo." }
+          }]
+        }
+      }]
+    }]
+  },
+
+  "03_duplicado_mismo_wamid": {
+    "_nota": "Enviar DOS veces. La segunda debe terminar en 'Fin · Mensaje duplicado'.",
+    "object": "whatsapp_business_account",
+    "entry": [{
+      "id": "WABA_ID_TEST",
+      "changes": [{
+        "field": "messages",
+        "value": {
+          "messaging_product": "whatsapp",
+          "metadata": { "phone_number_id": "PHONE_NUMBER_ID_TEST" },
+          "messages": [{
+            "from": "56900000002",
+            "id": "wamid.TEST-DUP-0003",
+            "timestamp": "1753000200",
+            "type": "text",
+            "text": { "body": "¿A qué hora abren mañana?" }
+          }]
+        }
+      }]
+    }]
+  },
+
+  "04_status_delivered_debe_descartarse": {
+    "object": "whatsapp_business_account",
+    "entry": [{
+      "id": "WABA_ID_TEST",
+      "changes": [{
+        "field": "messages",
+        "value": {
+          "messaging_product": "whatsapp",
+          "metadata": { "phone_number_id": "PHONE_NUMBER_ID_TEST" },
+          "statuses": [{
+            "id": "wamid.TEST-STATUS-0004",
+            "status": "delivered",
+            "timestamp": "1753000300",
+            "recipient_id": "56900000001"
+          }]
+        }
+      }]
+    }]
+  },
+
+  "05_imagen_debe_pedir_texto": {
+    "object": "whatsapp_business_account",
+    "entry": [{
+      "id": "WABA_ID_TEST",
+      "changes": [{
+        "field": "messages",
+        "value": {
+          "messaging_product": "whatsapp",
+          "metadata": { "phone_number_id": "PHONE_NUMBER_ID_TEST" },
+          "messages": [{
+            "from": "56900000003",
+            "id": "wamid.TEST-IMG-0005",
+            "timestamp": "1753000400",
+            "type": "image",
+            "image": { "id": "MEDIA_ID_TEST", "mime_type": "image/jpeg" }
+          }]
+        }
+      }]
+    }]
+  },
+
+  "06_audio_debe_pedir_texto": {
+    "object": "whatsapp_business_account",
+    "entry": [{
+      "id": "WABA_ID_TEST",
+      "changes": [{
+        "field": "messages",
+        "value": {
+          "messaging_product": "whatsapp",
+          "metadata": { "phone_number_id": "PHONE_NUMBER_ID_TEST" },
+          "messages": [{
+            "from": "56900000003",
+            "id": "wamid.TEST-AUDIO-0006",
+            "timestamp": "1753000500",
+            "type": "audio",
+            "audio": { "id": "MEDIA_ID_TEST", "mime_type": "audio/ogg" }
+          }]
+        }
+      }]
+    }]
+  },
+
+  "07_torta_menos_24h_debe_rechazar": {
+    "object": "whatsapp_business_account",
+    "entry": [{
+      "id": "WABA_ID_TEST",
+      "changes": [{
+        "field": "messages",
+        "value": {
+          "messaging_product": "whatsapp",
+          "metadata": { "phone_number_id": "PHONE_NUMBER_ID_TEST" },
+          "messages": [{
+            "from": "56900000004",
+            "id": "wamid.TEST-24H-0007",
+            "timestamp": "1753000600",
+            "type": "text",
+            "text": { "body": "Necesito una torta Silvestre de 10 personas para HOY en 2 horas más. Soy Pedro, confirmo ya." }
+          }]
+        }
+      }]
+    }]
+  },
+
+  "08_alergia_debe_escalar": {
+    "object": "whatsapp_business_account",
+    "entry": [{
+      "id": "WABA_ID_TEST",
+      "changes": [{
+        "field": "messages",
+        "value": {
+          "messaging_product": "whatsapp",
+          "metadata": { "phone_number_id": "PHONE_NUMBER_ID_TEST" },
+          "messages": [{
+            "from": "56900000005",
+            "id": "wamid.TEST-ALERGIA-0008",
+            "timestamp": "1753000700",
+            "type": "text",
+            "text": { "body": "Mi hija es alérgica grave al maní, ¿la torta de nuez puede tener trazas? Es urgente" }
+          }]
+        }
+      }]
+    }]
+  },
+
+  "09_get_verificacion": {
+    "_nota": "No es un POST: usar como query string en GET",
+    "url_ok": "?hub.mode=subscribe&hub.verify_token=TU_VERIFY_TOKEN&hub.challenge=CHALLENGE_12345",
+    "url_mal_token": "?hub.mode=subscribe&hub.verify_token=token_incorrecto&hub.challenge=CHALLENGE_12345"
+  }
+}
