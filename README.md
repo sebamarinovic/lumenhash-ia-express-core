@@ -21,12 +21,19 @@ Este repositorio centraliza la base técnica del proyecto IA Express de Lumenhas
 - WhatsApp
 - proveedor LLM por API
 
-## Estructura inicial
-- `docs/` documentación funcional y técnica
-- `workflows/` flujos exportados
+## Estructura
+- `docs/` documentación técnica y operativa
+  - `AUDITORIA_TECNICA.md` — auditoría nodo por nodo del workflow v1
+  - `FLUJO_DE_TRABAJO.md` — cómo funciona el bot (diagrama incluido)
+  - `CONFIGURACION.md` — guía para importar y configurar la v2
+  - `PLAN_PILOTO.md` — plan de pruebas piloto en 4 etapas
+- `workflows/` flujos de n8n
+  - `la-pasteleria-bot-whatsapp.json` — export original (v1, respaldo, no editar)
+  - `la-pasteleria-bot-whatsapp-v2.json` — versión corregida (desactivada, con placeholders, sin credenciales)
+- `tests/` casos de prueba y payloads de Meta
 - `infra/` despliegue y scripts
 - `knowledge/` base de conocimiento
 - `client_templates/` plantillas por rubro
 
 ## Estado
-En construcción.
+Piloto en preparación: workflow v2 auditado y corregido, pendiente de pruebas según `docs/PLAN_PILOTO.md`.
