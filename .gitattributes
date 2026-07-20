@@ -1,0 +1,7 @@
+# Normaliza finales de línea: evita diffs falsos CRLF/LF entre Windows y Git
+* text=auto
+*.json text eol=lf
+*.md text
+*.yml text
+*.py text
+*.tar.gz binary
