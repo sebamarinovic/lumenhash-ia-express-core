@@ -1,0 +1,1449 @@
+{
+  "name": "🧁 La Pastelería — Bot WhatsApp v2 (LUMENHASH)",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "lapasteleria-whatsapp-v2",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "v2n01",
+      "name": "GET · Verificación Meta",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1180,
+        -300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "g1",
+              "leftValue": "={{ $json.query['hub.mode'] }}",
+              "rightValue": "subscribe",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "g2",
+              "leftValue": "={{ $json.query['hub.verify_token'] }}",
+              "rightValue": "REEMPLAZAR_VERIFY_TOKEN",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "v2n02",
+      "name": "GET · ¿Token válido?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -940,
+        -300
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.query['hub.challenge'] }}",
+        "options": {}
+      },
+      "id": "v2n03",
+      "name": "GET · Responder challenge",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        -700,
+        -400
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "forbidden",
+        "options": {
+          "responseCode": 403
+        }
+      },
+      "id": "v2n04",
+      "name": "GET · Responder 403",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        -700,
+        -200
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lapasteleria-whatsapp-v2",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "v2n05",
+      "name": "POST · Webhook Meta",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1180,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "EVENT_RECEIVED",
+        "options": {}
+      },
+      "id": "v2n06",
+      "name": "POST · ACK 200",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        -940,
+        140
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c1",
+              "name": "sheet_id",
+              "value": "REEMPLAZAR_SHEET_ID",
+              "type": "string"
+            },
+            {
+              "id": "c2",
+              "name": "calendar_id",
+              "value": "REEMPLAZAR_CALENDAR_ID",
+              "type": "string"
+            },
+            {
+              "id": "c3",
+              "name": "email_encargada",
+              "value": "REEMPLAZAR_EMAIL_ENCARGADA",
+              "type": "string"
+            },
+            {
+              "id": "c4",
+              "name": "whatsapp_phone_number_id",
+              "value": "REEMPLAZAR_PHONE_NUMBER_ID",
+              "type": "string"
+            },
+            {
+              "id": "c5",
+              "name": "graph_api_version",
+              "value": "v21.0",
+              "type": "string"
+            },
+            {
+              "id": "c6",
+              "name": "openai_model",
+              "value": "gpt-4o-mini",
+              "type": "string"
+            },
+            {
+              "id": "c7",
+              "name": "direccion_local",
+              "value": "Rancagua 3421, Iquique",
+              "type": "string"
+            },
+            {
+              "id": "c8",
+              "name": "nombre_negocio",
+              "value": "La Pastelería",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "v2n07",
+      "name": "⚙️ CONFIG · Cliente",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -940,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Lee el payload real de Meta ($json.body) y decide si el evento es procesable.\nconst body = $json.body || {};\nconst value = body.entry?.[0]?.changes?.[0]?.value || {};\nconst msg = value.messages?.[0];\n\n// Payloads de estado (sent/delivered/read) u otros eventos sin mensaje: descartar\nif (!msg) {\n  return [{ json: { procesable: false, motivo: 'payload_sin_mensaje (status u otro evento)' } }];\n}\n\nconst wamid = msg.id || '';\n// Normalizacion de telefono: solo digitos, con codigo de pais, sin '+'\nconst telefono = String(msg.from || '').replace(/\\D/g, '');\nconst tipo = msg.type || 'desconocido';\nlet mensaje = '';\nlet procesable = true;\nlet motivo = '';\n\nif (tipo === 'text') {\n  mensaje = (msg.text?.body || '').trim();\n  if (!mensaje) { procesable = false; motivo = 'texto_vacio'; }\n} else if (['audio','image','video','document','sticker','location','contacts'].includes(tipo)) {\n  // Multimedia: la IA respondera pidiendo texto (no intentamos transcribir en el MVP)\n  mensaje = '[Instruccion del sistema: el cliente envio un mensaje de tipo \"' + tipo + '\" que no puedes ver. Pidele amablemente que lo escriba en texto.]';\n  motivo = 'multimedia_no_soportado';\n} else {\n  procesable = false; motivo = 'tipo_no_soportado: ' + tipo;\n}\n\nif (!wamid || !telefono) { procesable = false; motivo = 'faltan_wamid_o_telefono'; }\n\nreturn [{ json: {\n  procesable, motivo, wamid, telefono, tipo, mensaje,\n  numero_bot: value.metadata?.phone_number_id || '',\n  timestamp: $now.toISO()\n} }];"
+      },
+      "id": "v2n08",
+      "name": "Validar y Extraer Mensaje",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -700,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "p1",
+              "leftValue": "={{ $json.procesable }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "v2n09",
+      "name": "¿Mensaje procesable?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -460,
+        300
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "v2n10",
+      "name": "Fin · Payload descartado",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -220,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('⚙️ CONFIG · Cliente').first().json.sheet_id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "MensajesProcesados",
+          "mode": "name"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "wamid",
+              "lookupValue": "={{ $json.wamid }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "v2n11",
+      "name": "Dedup · Buscar wamid",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -220,
+        220
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "d1",
+              "leftValue": "={{ $json.wamid || '' }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "v2n12",
+      "name": "¿Mensaje duplicado?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        20,
+        220
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "v2n13",
+      "name": "Fin · Mensaje duplicado",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        260,
+        380
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('⚙️ CONFIG · Cliente').first().json.sheet_id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "MensajesProcesados",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "wamid": "={{ $('Validar y Extraer Mensaje').first().json.wamid }}",
+            "telefono": "={{ $('Validar y Extraer Mensaje').first().json.telefono }}",
+            "fecha": "={{ $now.toISO() }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "wamid",
+              "displayName": "wamid",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "telefono",
+              "displayName": "telefono",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "v2n14",
+      "name": "Dedup · Registrar wamid",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        260,
+        140
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('⚙️ CONFIG · Cliente').first().json.sheet_id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "EstadoConversacion",
+          "mode": "name"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "telefono",
+              "lookupValue": "={{ $('Validar y Extraer Mensaje').first().json.telefono }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "v2n15",
+      "name": "Estado · Leer conversación",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        500,
+        140
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Construye el contexto y el body para OpenAI Chat Completions.\nconst SYSTEM_PROMPT = `\nEres Dulce, la asistente virtual de La Pastelería, una pastelería de\nautor ubicada en Rancagua 3421, Iquique. Representas a la dueña del\nlocal — una mujer apasionada por la repostería casera, cuya filosofía\nviene de las recetas de su abuela: productos frescos, naturales y sin\naditivos industriales.\n\n════════════════════════════════════════\n  REGLAS DE ORO — LEE ESTO ANTES DE RESPONDER\n════════════════════════════════════════\n\nREGLA 1 — SALUDOS (PROHIBICIÓN ABSOLUTA):\nCuando es_primer_mensaje = false, la palabra \"Hola\" está\nCOMPLETAMENTE PROHIBIDA. Tu respuesta no puede contener\n\"Hola\", \"¡Hola!\", \"Buenas\", \"Buenos días\" en ninguna parte.\nEmpieza directamente con: \"Perfecto\", \"Claro\", \"Anotado\",\n\"Dale\", o directamente con la información. \nSi escribes \"Hola\" cuando es_primer_mensaje = false,\nestás cometiendo un error grave.\n\nREGLA 2 — MEMORIA:\nLee el historial completo antes de responder. Si el cliente ya eligió\nun producto, NO le preguntes de nuevo cuál quiere. Si dijo \"torta amor\nde mango para 20 personas\", ya lo sabes — avanza al siguiente paso.\n\nREGLA 3 — LISTAS:\nNunca muestres listas de opciones si el cliente ya eligió una opción.\n\nREGLA 4 — BREVEDAD:\nMáximo 5 líneas por mensaje. Si hay mucho que decir, prioriza lo más\nimportante y deja el resto para el siguiente mensaje.\n\nREGLA 5 — TONO:\nHablas como una persona real, no como un bot. Usa: \"claro que sí\",\n\"perfecto\", \"dale\", \"anotado\", \"va quedando\", \"¡qué rica elección!\".\nNunca: \"procederé\", \"le informo\", \"con gusto le asisto\", \"¿en qué más\npuedo ayudarte?\".\n\nREGLA 6 — EMOJIS:\nMáximo 1-2 por mensaje. Nunca en exceso.\n\nREGLA 7 — ESPONTANEIDAD:\nA veces añade un comentario genuino sobre el producto:\n\"La Amor de mango es una de las favoritas, la verdad\"\n\"El croissant Roma con queso de cabra está increíble\"\n\nVERIFICACIÓN FINAL ANTES DE ENVIAR TU RESPUESTA:\n✓ Si es_primer_mensaje = false → ¿empieza con \"Hola\"? BÓRRALO.\n✓ ¿El cliente ya eligió algo? → No repitas la lista de opciones.\n✓ ¿Tienes toda la info necesaria (nombre + fecha + hora) para confirmar? → Confirma.\n\n════════════════════════════════════════\n  INFO DEL NEGOCIO\n════════════════════════════════════════\n\nNombre: La Pastelería — naturalmente dulce\nDirección: Rancagua 3421, Iquique\nInstagram: @lapasteleria.iqq\nHorarios:\n  Desayunos: 09:00 – 13:00 hrs (lunes a sábado)\n  Tarde: 13:00 – 17:00 hrs\n  Cenas y pizzas: 17:00 – 21:30 hrs\nModalidad: Solo retiro en local (sin delivery)\nPago: En el local al momento del retiro\n\n════════════════════════════════════════\n  CARTA COMPLETA\n════════════════════════════════════════\n\nBEBIDAS CALIENTES:\nTé de la casa (recarga incluida, hierba luisa) $3.800\nChocolate caliente de la abuelita $4.500\nTé con leche $3.500 | Matcha latte $4.500 | Chai latte $4.200\nAmericano $3.000 | Espresso $2.500 | Latte $3.600\nFlat White $3.500 | Mocca $4.000 | Capuccino $3.500 | Latte Sabores $3.800\n\nBEBIDAS FRÍAS:\nAmericano $3.000 | Caramel $4.500 | Cappuccino $4.000 | Mocca $4.500\nChai latte $5.000 | Matcha latte $5.500 | Iced tea $5.500 | Frapuccino $6.000\nAgregado crema +$1.000 | Leche vegetal (almendras/avena/coco) +$1.000\n\nJUGOS NATURALES:\nFrutilla $5.000 | Piña $5.000 | Tangelo $5.200 | Mango de pica $5.500\nGuayaba $5.500 | Maracuyá $5.500 | Frambuesa $5.500\nLimonada $4.200 | Limonada menta jengibre $4.500\nAlegres $6.000 | Batidos en leche $6.000\nMilkshake Oreo $6.500 | Milkshake Frutilla $6.500\n\nPASTELERÍA (trozo/unidad):\nTorta del día $6.000 | Cheesecake del día $5.500\nKuchen enrejado manzana $5.000 | Pie de limón $5.000\nKuchen de nuez $5.000 | Kuchen sureño frutos rojos $5.500\nCroissant dulce $6.000\n\nCROISSANTS SALADOS:\nFresco (queso crema, tomate cherry, pesto albahaca) $6.000\nSerrano (jamón serrano, tomate cherry, rúcula) $6.500\nPochado (palta laminada, tomate cherry, huevo pochado) $7.000\nCrunch (queso crema, palta hass, huevo revuelto, tocino, ciboulette) $7.000\nMilán (queso fundido, jamón acaramelado) $6.000\nTurín (queso fundido, cherry asados, aceitunas azapa, pesto) $7.000\nPisa (pomodoro, queso fundido, jamón, aceitunas azapa, orégano) $6.500\nRoma (queso de cabra gratinado, aceitunas azapa, jamón, pesto albahaca) $7.500\nVerona (pastrami, cebolla caramelizada, queso fundido, rúcula, mostaza dulce) $7.500\n\nTOSTADAS (pan masa madre, brioche o sin gluten +$2.000):\nPalta hass $5.500 | Palta + huevo pochado $7.000 | Huevo revuelto $6.500\nPalta + cherry $6.500\nPastrami (palta laminada, pastrami, huevos benedictinos) $12.000\nFrench toast (brioche, ricota, mermelada casera frutos rojos) $8.500\n\nSÁNDWICHES (papas fritas + salsa de la casa, pan brioche o masa madre):\nChurrasco palta $8.500 | Barros luco $9.000 | Italiano $9.500\nLuco palta $9.500 | Chacarero $9.500\n\nCOMPLETOS (pan 23cm, papas fritas, salsa de la casa):\nVegan $7.000 | Champipleto $7.000 | Italiano $7.000 | Hass $7.500\n\nPAPAS FRITAS:\nIndividuales $3.000 | Medianas $6.500 | Salchipapa $10.000\nCanasta clásica (papas + proteína a elección + queso fundido) $12.000\n\nLÍNEA KETO (harina de almendras, endulzada con alulosa):\nTrozo torta keto $8.000\nCheesecake NY pie limón keto $7.500 | Cheesecake NY frutos rojos keto $7.500\nCheesecake tiramisú keto $7.500 | Mousse de chocolate keto $7.500\nKuchen de nuez keto $6.500 | Pie de limón keto $6.500 | Tartaletas keto $6.500\nAlfajor de chocolate keto (manjar casero, chocolate 90%) $5.000\nDelicias keto $3.500 | Maicenas keto $3.500\nSándwich churrasco italiano keto $15.000 | Barros luco keto $14.000\nChurrasco palta keto $13.500 | Chacarero keto $14.000\nBarros luco palta keto $15.000\nCompleto italiano keto $8.500 | Completo hass keto $9.500 | Champipleto keto $9.000\n\nDESAYUNOS 09:00–13:00:\nCLÁSICO $20.000 — incluye: café o té, mini bowl yogurt natural o acai\n(con granola y frutas de estación), jugo de naranja, galletitas de la casa.\nOpción 1: Huevos revueltos con jamón, palta, queso crema, cherry + tostadas masa madre\nOpción 2: Omelette con palta, mix verde, queso de cabra, cherry + tostadas masa madre\nOpción 3: Tostón masa madre con mix verde, cherry asados, jamón serrano, burrata flameada\nOpción 4: Croissant queso-jamón + mix verde, cherry, palta en láminas\nOpción 5: Prensado masa madre con mozzarella, champiñones, cherry salteados, pesto\n\nKETO $25.000 — incluye: café o té, mini bowl yogurt keto o acai keto\n(granola keto + frutas keto), jugo de frutilla, cheesecake NY frutos rojos keto.\nOpción 1: Tostadas gluten free + palta + jamón pavo + huevo revuelto\nOpción 2: Tostadas pan keto + ricota + cherry asados + palta + jamón serrano + mix verde\nOpción 3: Bowl mix verde + palta + cherry + champiñones salteados + huevo duro + pollo\n\nPIZZAS (solo 17:00–21:30 hrs — masa madre, pomodoro casero, 8 porciones):\nMozzarella mágica (mozarella + pepperoni crujiente) $12.000\nMozzarella hawaiana (mozarella, jamón acaramelado, piña caramelizada, orégano) $14.000\nPesto a la nonna (mozarella, pesto casero, cherry, aceitunas azapa, albahaca) $14.000\nFungi e gori (mozarella, champiñones, pimentones, cebolla morada, albahaca) $14.000\nBella vita (mozarella, burrata, jamón serrano, pesto albahaca) $15.000\n\n════════════════════════════════════════\n  TORTAS DE ENCARGO (mínimo 24 hrs anticipación)\n════════════════════════════════════════\n\nMINI TORTA — todos los sabores — $15.000\n\nTRADICIONALES: 10p $35.000 / 15p $40.000 / 20p $45.000\nSilvestre: bizcocho chocolate+naranja, manjar, crema de café\nMocca: bizcocho chocolate, mermelada guinda ácida, manjar, ganache\nAlpina: bizcochos vainilla+chocolate intercalados, crema pastelera, manjar,\n  chantilly, semi baño chocolate, virutilla\nTres leches: bizcocho vainilla remojado en tres leches, crema pastelera, manjar,\n  chantilly, canela\nTres leches frambuesa: igual + frambuesas y topping de frambuesa\nLucuma manjar-nuez: bizcocho vainilla, mousse lúcuma, manjar\nTriple chocolate: bizcocho chocolate, manjar, ganache, crema chocolate,\n  chantilly chocolate, semi baño\nSiete sabores: bizcochos chocolate+vainilla alternados, mermelada guinda,\n  chantilly, hojarascas, manjar, piña\nCrocantes (mango/chocolate/frutilla/maracuyá/piña):\n  bizcocho vainilla o chocolate, chantilly, fruta natural, hojarascas con manjar\n\nHOJARASCAS: 10p $40.000 / 15p $45.000 / 20p $55.000\nAmor frutilla: hojarascas, manjar, crema pastelera, crema blanca,\n  frambuesas naturales, cubierta chantilly\nAmor mango: igual pero con mango natural en vez de frambuesas\nPompador: hojarascas, manjar, mousse de plátano\nHolandesa: hojarascas, manjar, crema pastelera, mermelada guinda ácida,\n  cubierta merengue suizo\nDulce armonía: hojarascas intercaladas de manjar y crema pastelera,\n  cubierta en manjar\n\nDE AUTOR: 10p $40.000 / 15p $45.000 / 20p $55.000\nLa Pastelería: bizcocho vainilla, frosting frambuesas naturales, crema pastelera,\n  hojarascas con manjar\nCaluga: base galletas+nueces molidas+naranja, manjar de campo, frambuesas naturales\nLeonore: bizcocho nuez húmedo, chantilly, mermelada guinda ácida, crema pastelera,\n  hojarascas con manjar\nOreo chocolate: bizcocho chocolate, manjar, frosting chocolate, crema de oreos\nAmantino: bizcocho criollo chocolate húmedo, crema inglesa de chocolate\nMango dieciséis: bizcocho vainilla esponjoso, frosting de mango dulce,\n  hojarascas con manjar\nChocolate María: bizcocho chocolate+naranja, fudge casero de chocolate, manjar\nHindú: bizcocho zanahoria+nueces, frosting naranja+limón, merengue suizo\nDevoción: bizcocho nuez húmedo, frosting lúcuma fresco, hojarascas con manjar\nNuestra Amanda: bizcocho chocolate, chantilly, frambuesas naturales, disco de nuez, manjar\nAmaranto: bizcocho criollo chocolate, mermelada guinda, insert frutos rojos, chantilly\nCiruela silvestre: bizcocho de ciruelas húmedo, mermelada guinda ácida, manjar\nReina Isabella: bizcocho chocolate, frosting café, manjar, mermelada guinda ácida\nAntonia: bizcocho chocolate suave, frosting de café, fudge chocolate casero,\n  hojarascas con manjar\nCelestial vainilla: bizcocho vainilla, mermelada guinda, chantilly, disco merengue,\n  hojarascas con manjar\nCelestial chocolate: bizcocho chocolate+naranja, mermelada guinda, crema chocolate,\n  disco merengue chocolate, hojarascas con manjar\nChocolate crocante de nuez: bizcocho chocolate+naranja, chantilly, disco de nuez,\n  manjar, semi baño de chocolate\nAmantina (solo verano): discos merengue suizo, chantilly, compota frambuesas, manjar\n\nOTRAS TORTAS: 10p $40.000 / 15p $45.000 / 20p $55.000\nPanqueques:\n  Chocolate amor: panqueque chocolate, manjar, chantilly, frambuesas, crema pastelera\n  Mango manjar: panqueque vainilla, manjar, chantilly, mango natural\n  Naranja: panqueque vainilla, curd natural de naranja, cubierto en chantilly\n  Chocolate ganache: panqueque chocolate, manjar, ganache de chocolate\n  Chocolate crema nuez: panqueque chocolate, chantilly, nueces picadas, manjar\n  Panqueque Amor: panqueque vainilla, manjar, chantilly, frambuesas, crema pastelera\nHeladas (base merengue suizo):\n  Lúcuma: merengue suizo, mousse lúcuma, manjar\n  Mango: merengue suizo, chantilly de mango, mango natural picado\n  Frambuesa: merengue suizo, mousse frambuesas, frambuesas naturales\n  Frutillas: merengue suizo, chantilly, frutillas naturales\n  Bávaro: merengue suizo de chocolate, manjar, chantilly, frambuesas naturales\n\nOTROS POSTRES (precio completo):\nKuchen enrejado (manzana/frutos rojos/durazno) $24.000\nKuchen sureño (manzana/frutos rojos) $25.000 | Kuchen de nuez $25.000\nStreusel $24.000 | Surtido $25.000 | Cuarteto $30.000\nCheesecake NY (maracuyá/frutos rojos/oreo/mango) $30.000\nCheesecake tradicional (crema pastelera + frutillas) $28.000\nTartaletas (fresas/cuatro estaciones/durazno/piña/frutos rojos) $22.000\nPie limón tradicional $25.000\nPie limón frambuesa $28.000\nPie limón chocolate $28.000\n\n════════════════════════════════════════\n  REGLAS DE NEGOCIO\n════════════════════════════════════════\n\n1. Tortas de encargo: minimo 24 hrs de anticipacion entre este momento y\n   la fecha+hora de retiro. Si no se cumple, NO confirmes: ofrece la fecha\n   valida mas cercana. Las tortas de encargo SI se confirman por el flujo\n   normal (pedido_confirmado: true) y agregas en nota_interna \"torta de encargo\".\n2. Alergias graves mencionadas: set accion_interna \"escalar_humano\".\n3. Cliente molesto 2+ mensajes seguidos: set accion_interna \"escalar_humano\".\n4. Pan sin gluten: siempre mencionar el costo adicional de +$2.000.\n5. Pizzas SOLO disponibles entre 17:00 y 21:30 hrs. Fuera de ese horario,\n   avisa amablemente que no están disponibles aún.\n6. Pagos: se realizan en el local. No manejas pagos online ni transferencias.\n7. Para 30 personas: ese tamaño no existe. Sugerir 2 tortas de 15 o 20 personas.\n8. pedido_confirmado: true SOLO cuando el cliente confirma explicitamente\n   (\"si\", \"confirmo\", \"dale\", \"listo\") Y ya tienes nombre + fecha_retiro +\n   hora_retiro validos. Nunca confirmes sin fecha. Nunca inventes fecha ni hora.\n9. Si preguntan si eres un bot: \"¡Soy Dulce, la asistente de La Pastelería! 😄\"\n10. NUNCA menciones que eres IA, Claude, ni ningún modelo de lenguaje.\n\n════════════════════════════════════════\n  FECHA Y HORA DE RETIRO (OBLIGATORIO)\n════════════════════════════════════════\n\nEn cada mensaje recibes fecha_hoy, hora_actual y dia_semana (America/Santiago).\n- Convierte expresiones como \"manana\", \"el viernes\", \"pasado manana\" a una\n  fecha concreta YYYY-MM-DD en datos_cliente.fecha_retiro.\n- hora_retiro siempre en formato HH:MM de 24 horas, entre 09:00 y 21:30.\n- Nunca aceptes fechas pasadas ni horas fuera de horario: propone alternativa.\n- Si el cliente no ha dado fecha de retiro, pidela ANTES de confirmar.\n\n════════════════════════════════════════\n  ESTADOS DE CONVERSACIÓN\n════════════════════════════════════════\nINICIO | NAVEGANDO | ARMANDO_PEDIDO | DATOS_CLIENTE | CONFIRMACION | COMPLETADO | CONSULTA\n\n════════════════════════════════════════\n  FORMATO DE SALIDA\n════════════════════════════════════════\n\nResponde ÚNICAMENTE con el siguiente JSON. Sin texto adicional, sin markdown,\nsin bloques de código. Solo el JSON puro.\n\n{\n  \"respuesta\": \"texto del mensaje para WhatsApp — máximo 5 líneas, tono humano\",\n  \"nuevo_estado\": \"ESTADO\",\n  \"pedido_actualizado\": [{\"producto\": \"nombre exacto del producto\", \"precio\": 0}],\n  \"datos_cliente\": {\"nombre\": \"\", \"fecha_retiro\": \"YYYY-MM-DD\", \"hora_retiro\": \"HH:MM\"},\n  \"pedido_confirmado\": false,\n  \"total_pedido\": 0,\n  \"accion_interna\": \"ninguna | escalar_humano\",\n  \"nota_interna\": \"nota solo para el sistema, nunca se envía al cliente\"\n}\n`;\n\nconst msgData = $('Validar y Extraer Mensaje').first().json;\nconst cfg = $('⚙️ CONFIG · Cliente').first().json;\nconst stateRow = $input.first()?.json || {};\n\nconst estadoConversacion = stateRow.estado_conversacion || 'INICIO';\nconst nombreCliente = stateRow.nombre_cliente || '';\nconst fechaRetiro = stateRow.fecha_retiro || '';\nconst horaRetiro = stateRow.hora_retiro || '';\n\nlet historial = [];\ntry { historial = JSON.parse(stateRow.historial || '[]'); } catch (e) { historial = []; }\nif (historial.length > 40) historial = historial.slice(-40);\nhistorial.push({ rol: 'cliente', texto: msgData.mensaje, ts: msgData.timestamp });\n\nlet pedidoActual = [];\ntry { pedidoActual = JSON.parse(stateRow.pedido_actual || '[]'); } catch (e) { pedidoActual = []; }\n\nconst mensajes = [{ role: 'system', content: SYSTEM_PROMPT }];\nfor (let i = 0; i < historial.length - 1; i++) {\n  const m = historial[i];\n  const contenido = String(m.texto || '').trim();\n  if (!contenido) continue;\n  mensajes.push({ role: m.rol === 'cliente' ? 'user' : 'assistant', content: contenido });\n}\n\nconst esPrimerMensaje = historial.filter(m => m.rol === 'cliente').length <= 1;\n\n// $now usa la zona horaria del workflow (America/Santiago)\nmensajes.push({\n  role: 'user',\n  content: JSON.stringify({\n    mensaje_cliente: msgData.mensaje,\n    fecha_hoy: $now.toFormat('yyyy-MM-dd'),\n    hora_actual: $now.toFormat('HH:mm'),\n    dia_semana: $now.setLocale('es').toFormat('cccc'),\n    estado_conversacion: estadoConversacion,\n    pedido_actual: pedidoActual,\n    datos_cliente: { nombre: nombreCliente, fecha_retiro: fechaRetiro, hora_retiro: horaRetiro },\n    es_primer_mensaje: esPrimerMensaje\n  })\n});\n\nreturn [{ json: {\n  api_body: { model: cfg.openai_model, messages: mensajes, temperature: 0.3, max_tokens: 1024 },\n  telefono: msgData.telefono,\n  historial_con_cliente: historial\n} }];"
+      },
+      "id": "v2n16",
+      "name": "IA · Preparar contexto",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        740,
+        140
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.api_body) }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "v2n17",
+      "name": "IA · OpenAI Chat",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        980,
+        140
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 2000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parsea y VALIDA la respuesta del modelo. El total y la confirmacion\n// se deciden en codigo, nunca a ciegas por el modelo.\nconst raw = $input.first().json;\nconst msgData = $('Validar y Extraer Mensaje').first().json;\n\nlet r = null;\nlet errorParseo = '';\ntry {\n  const rawText = raw.choices?.[0]?.message?.content ?? '';\n  const clean = rawText.replace(/^```json\\s*/i, '').replace(/^```\\s*/i, '').replace(/\\s*```$/, '').trim();\n  r = JSON.parse(clean);\n} catch (e) { errorParseo = e.message; }\n\nif (!r || typeof r !== 'object' || typeof r.respuesta !== 'string') {\n  const prev = $('Estado · Leer conversación').first()?.json || {};\n  let pedidoPrev = []; try { pedidoPrev = JSON.parse(prev.pedido_actual || '[]'); } catch (e) {}\n  r = {\n    respuesta: 'Perdona, tuve un pequeno problema tecnico 😅 ¿Puedes repetirme eso?',\n    nuevo_estado: prev.estado_conversacion || 'INICIO',\n    pedido_actualizado: pedidoPrev,\n    datos_cliente: { nombre: prev.nombre_cliente || '', fecha_retiro: prev.fecha_retiro || '', hora_retiro: prev.hora_retiro || '' },\n    pedido_confirmado: false, total_pedido: 0, accion_interna: 'ninguna',\n    nota_interna: 'ERROR parseo respuesta IA: ' + (errorParseo || 'estructura invalida')\n  };\n}\n\n// ── Sanitizar ──\nconst pedido = (Array.isArray(r.pedido_actualizado) ? r.pedido_actualizado : [])\n  .filter(p => p && p.producto)\n  .map(p => ({ producto: String(p.producto), precio: Number(p.precio) || 0 }));\nr.datos_cliente = r.datos_cliente || {};\nconst nombre = String(r.datos_cliente.nombre || '').trim();\nconst fechaRetiro = String(r.datos_cliente.fecha_retiro || '').trim();\nconst horaRetiro = String(r.datos_cliente.hora_retiro || '').trim();\nr.accion_interna = ['ninguna', 'escalar_humano'].includes(r.accion_interna) ? r.accion_interna : 'ninguna';\nconst total = pedido.reduce((a, p) => a + p.precio, 0);\n\n// ── Validaciones de negocio antes de aceptar una confirmacion ──\nlet confirmado = r.pedido_confirmado === true;\nlet motivo = '';\nif (confirmado) {\n  const reFecha = /^\\d{4}-\\d{2}-\\d{2}$/;\n  const reHora = /^([01]?\\d|2[0-3]):[0-5]\\d$/;\n  if (!nombre) motivo = 'me falta tu nombre';\n  else if (pedido.length === 0) motivo = 'no tengo productos anotados en el pedido';\n  else if (!reFecha.test(fechaRetiro)) motivo = 'me falta la fecha de retiro';\n  else if (!reHora.test(horaRetiro)) motivo = 'me falta la hora de retiro';\n  else {\n    const [hh, mm] = horaRetiro.split(':').map(Number);\n    const minutos = hh * 60 + mm;\n    const ahoraMin = $now.hour * 60 + $now.minute;\n    const hoy = $now.toFormat('yyyy-MM-dd');\n    const abre = 9 * 60, cierra = 21 * 60 + 30;\n    if (fechaRetiro < hoy) motivo = 'esa fecha ya paso';\n    else if (fechaRetiro === hoy && minutos <= ahoraMin) motivo = 'esa hora ya paso hoy';\n    else if (minutos < abre || minutos > cierra) motivo = 'atendemos de 09:00 a 21:30';\n    else {\n      const esTortaEncargo = pedido.some(p => /torta|hojarasca|panqueque|merengue/i.test(p.producto) && p.precio >= 15000);\n      if (esTortaEncargo) {\n        const dias = (Date.parse(fechaRetiro) - Date.parse(hoy)) / 86400000;\n        const diffMin = dias * 1440 + (minutos - ahoraMin);\n        if (diffMin < 24 * 60) motivo = 'las tortas de encargo necesitan minimo 24 horas de anticipacion';\n      }\n    }\n  }\n  if (motivo) {\n    confirmado = false;\n    r.respuesta = 'Casi listo 😊 Solo un detalle antes de confirmar: ' + motivo + '. ¿Me lo confirmas?';\n    r.nuevo_estado = 'DATOS_CLIENTE';\n    r.nota_interna = ((r.nota_interna || '') + ' | Confirmacion bloqueada por validacion: ' + motivo).trim();\n  }\n}\n\n// ── Historial ──\nconst historial = $('IA · Preparar contexto').first().json.historial_con_cliente || [];\nhistorial.push({ rol: 'bot', texto: r.respuesta, ts: new Date().toISOString() });\nconst historialFinal = historial.length > 40 ? historial.slice(-40) : historial;\n\nreturn [{ json: {\n  ...r,\n  pedido_actualizado: pedido,\n  total_pedido: total,\n  pedido_confirmado: confirmado,\n  datos_cliente: { nombre, fecha_retiro: fechaRetiro, hora_retiro: horaRetiro },\n  telefono: msgData.telefono,\n  wamid: msgData.wamid,\n  historial_para_sheets: JSON.stringify(historialFinal),\n  pedido_para_sheets: JSON.stringify(pedido)\n} }];"
+      },
+      "id": "v2n18",
+      "name": "IA · Parsear y validar",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1220,
+        60
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('⚙️ CONFIG · Cliente').first().json.sheet_id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "EstadoConversacion",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "telefono": "={{ $json.telefono }}",
+            "estado_conversacion": "={{ $json.nuevo_estado }}",
+            "historial": "={{ $json.historial_para_sheets }}",
+            "pedido_actual": "={{ $json.pedido_para_sheets }}",
+            "nombre_cliente": "={{ $json.datos_cliente.nombre }}",
+            "fecha_retiro": "={{ $json.datos_cliente.fecha_retiro }}",
+            "hora_retiro": "={{ $json.datos_cliente.hora_retiro }}",
+            "ultima_actualizacion": "={{ $now.toISO() }}"
+          },
+          "matchingColumns": [
+            "telefono"
+          ],
+          "schema": [
+            {
+              "id": "telefono",
+              "displayName": "telefono",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "estado_conversacion",
+              "displayName": "estado_conversacion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "historial",
+              "displayName": "historial",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "pedido_actual",
+              "displayName": "pedido_actual",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nombre_cliente",
+              "displayName": "nombre_cliente",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fecha_retiro",
+              "displayName": "fecha_retiro",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "hora_retiro",
+              "displayName": "hora_retiro",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ultima_actualizacion",
+              "displayName": "ultima_actualizacion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "v2n19",
+      "name": "Estado · Guardar conversación",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1460,
+        60
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('IA · Parsear y validar').first().json.pedido_confirmado }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and",
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                }
+              },
+              "renameOutput": true,
+              "outputKey": "pedido_confirmado"
+            },
+            {
+              "conditions": {
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('IA · Parsear y validar').first().json.accion_interna }}",
+                    "rightValue": "escalar_humano",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and",
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                }
+              },
+              "renameOutput": true,
+              "outputKey": "escalar_humano"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "id": "v2n20",
+      "name": "Switch · Acción",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1700,
+        60
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Genera codigo unico de pedido y fechas ISO con offset real de Chile.\nconst r = $('IA · Parsear y validar').first().json;\nconst fecha = r.datos_cliente.fecha_retiro;\nconst hora = r.datos_cliente.hora_retiro.padStart(5, '0');\n\n// Offset vigente de America/Santiago en esa fecha (maneja horario de verano)\nfunction offsetSantiago(d) {\n  const parts = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Santiago', timeZoneName: 'longOffset' }).formatToParts(d);\n  const tz = (parts.find(p => p.type === 'timeZoneName') || {}).value || '';\n  const m = tz.match(/GMT([+-]\\d{2}:\\d{2})/);\n  return m ? m[1] : '-04:00';\n}\nconst off = offsetSantiago(new Date(fecha + 'T12:00:00Z'));\nconst [hh, mm] = hora.split(':').map(Number);\nconst endHora = String(Math.min(hh + 1, 23)).padStart(2, '0') + ':' + String(mm).padStart(2, '0');\nconst startIso = fecha + 'T' + hora + ':00' + off;\nconst endIso = fecha + 'T' + endHora + ':00' + off;\n\n// Codigo unico y reproducible (derivado del wamid: reintentos generan el mismo)\nconst sufijo = (r.wamid || '').replace(/[^A-Za-z0-9]/g, '').slice(-6).toUpperCase() || String(Date.now()).slice(-6);\nconst codigo = 'LP-' + fecha.replace(/-/g, '') + '-' + sufijo;\n\nconst productosTxt = r.pedido_actualizado.map(p => '• ' + p.producto + ' — $' + p.precio.toLocaleString('es-CL')).join('\\n');\nconst productosLinea = r.pedido_actualizado.map(p => p.producto + ' $' + p.precio).join(' | ');\n\nreturn [{ json: { ...r, codigo_pedido: codigo, start_iso: startIso, end_iso: endIso, productos_txt: productosTxt, productos_linea: productosLinea } }];"
+      },
+      "id": "v2n21",
+      "name": "Pedido · Código y evento",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1940,
+        -160
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('⚙️ CONFIG · Cliente').first().json.sheet_id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Pedidos",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "codigo_pedido": "={{ $('Pedido · Código y evento').first().json.codigo_pedido }}",
+            "timestamp": "={{ $now.toISO() }}",
+            "telefono": "={{ $('Pedido · Código y evento').first().json.telefono }}",
+            "nombre_cliente": "={{ $('Pedido · Código y evento').first().json.datos_cliente.nombre }}",
+            "fecha_retiro": "={{ $('Pedido · Código y evento').first().json.datos_cliente.fecha_retiro }}",
+            "hora_retiro": "={{ $('Pedido · Código y evento').first().json.datos_cliente.hora_retiro }}",
+            "productos": "={{ $('Pedido · Código y evento').first().json.productos_linea }}",
+            "total": "={{ $('Pedido · Código y evento').first().json.total_pedido }}",
+            "estado": "Confirmado",
+            "nota_interna": "={{ $('Pedido · Código y evento').first().json.nota_interna || '' }}",
+            "calendar_event_id": ""
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "codigo_pedido",
+              "displayName": "codigo_pedido",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "telefono",
+              "displayName": "telefono",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nombre_cliente",
+              "displayName": "nombre_cliente",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fecha_retiro",
+              "displayName": "fecha_retiro",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "hora_retiro",
+              "displayName": "hora_retiro",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "productos",
+              "displayName": "productos",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "total",
+              "displayName": "total",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "estado",
+              "displayName": "estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nota_interna",
+              "displayName": "nota_interna",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "calendar_event_id",
+              "displayName": "calendar_event_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "v2n22",
+      "name": "Pedido · Registrar [Sheets]",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        2180,
+        -160
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "={{ $('⚙️ CONFIG · Cliente').first().json.calendar_id }}",
+          "mode": "id"
+        },
+        "start": "={{ $('Pedido · Código y evento').first().json.start_iso }}",
+        "end": "={{ $('Pedido · Código y evento').first().json.end_iso }}",
+        "additionalFields": {
+          "summary": "={{ '🎂 ' + $('Pedido · Código y evento').first().json.codigo_pedido + ' — ' + ($('Pedido · Código y evento').first().json.datos_cliente.nombre || 'Cliente') }}",
+          "description": "={{ 'Pedido confirmado por WhatsApp\n\nCodigo: ' + $('Pedido · Código y evento').first().json.codigo_pedido + '\nCliente: ' + ($('Pedido · Código y evento').first().json.datos_cliente.nombre || '') + '\nTelefono: ' + $('Pedido · Código y evento').first().json.telefono + '\nRetiro: ' + $('Pedido · Código y evento').first().json.datos_cliente.fecha_retiro + ' ' + $('Pedido · Código y evento').first().json.datos_cliente.hora_retiro + '\n\nProductos:\n' + $('Pedido · Código y evento').first().json.productos_txt + '\n\nTOTAL: $' + $('Pedido · Código y evento').first().json.total_pedido.toLocaleString('es-CL') }}",
+          "location": "={{ $('⚙️ CONFIG · Cliente').first().json.direccion_local }}"
+        }
+      },
+      "id": "v2n23",
+      "name": "Pedido · Evento [Calendar]",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        2420,
+        -160
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('⚙️ CONFIG · Cliente').first().json.email_encargada }}",
+        "subject": "={{ '🎂 Pedido ' + $('Pedido · Código y evento').first().json.codigo_pedido + ' — ' + ($('Pedido · Código y evento').first().json.datos_cliente.nombre || 'Cliente') + ' — retiro ' + $('Pedido · Código y evento').first().json.datos_cliente.fecha_retiro + ' ' + $('Pedido · Código y evento').first().json.datos_cliente.hora_retiro }}",
+        "message": "={{ '<h2 style=\"color:#2d6a4f\">🧁 Nuevo pedido confirmado</h2><p><b>Codigo:</b> ' + $('Pedido · Código y evento').first().json.codigo_pedido + '<br><b>Cliente:</b> ' + ($('Pedido · Código y evento').first().json.datos_cliente.nombre || 'No especificado') + '<br><b>WhatsApp:</b> ' + $('Pedido · Código y evento').first().json.telefono + '<br><b>Retiro:</b> ' + $('Pedido · Código y evento').first().json.datos_cliente.fecha_retiro + ' a las ' + $('Pedido · Código y evento').first().json.datos_cliente.hora_retiro + '<br><b>Total:</b> $' + $('Pedido · Código y evento').first().json.total_pedido.toLocaleString('es-CL') + '</p><h3>Productos</h3><pre>' + $('Pedido · Código y evento').first().json.productos_txt + '</pre>' + (($('Pedido · Código y evento').first().json.nota_interna || '') ? '<p><b>⚠️ Nota:</b> ' + $('Pedido · Código y evento').first().json.nota_interna + '</p>' : '') + '<hr><p style=\"color:#888;font-size:12px\">Bot WhatsApp — LUMENHASH</p>' }}",
+        "options": {}
+      },
+      "id": "v2n24",
+      "name": "Pedido · Correo encargada [Gmail]",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2660,
+        -160
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/{{ $('⚙️ CONFIG · Cliente').first().json.graph_api_version }}/{{ $('⚙️ CONFIG · Cliente').first().json.whatsapp_phone_number_id }}/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ messaging_product: 'whatsapp', to: $('IA · Parsear y validar').first().json.telefono, type: 'text', text: { body: $('IA · Parsear y validar').first().json.respuesta } }) }}",
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "id": "v2n25",
+      "name": "WA · Responder [pedido ✓]",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2900,
+        -160
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 2000
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('⚙️ CONFIG · Cliente').first().json.email_encargada }}",
+        "subject": "🚨 Atención requerida — Bot WhatsApp La Pastelería",
+        "message": "={{ '<h2 style=\"color:#c0392b\">⚠️ Conversación escalada a revisión humana</h2><p><b>Teléfono:</b> ' + $('Validar y Extraer Mensaje').first().json.telefono + '<br><b>Último mensaje:</b> ' + $('Validar y Extraer Mensaje').first().json.mensaje + '<br><b>Motivo:</b> ' + ($('IA · Parsear y validar').first().json.nota_interna || 'No especificado') + '</p><p>Escríbele directamente por WhatsApp para continuar la atención.</p>' }}",
+        "options": {}
+      },
+      "id": "v2n26",
+      "name": "Escalar · Correo alerta [Gmail]",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1940,
+        60
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/{{ $('⚙️ CONFIG · Cliente').first().json.graph_api_version }}/{{ $('⚙️ CONFIG · Cliente').first().json.whatsapp_phone_number_id }}/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ messaging_product: 'whatsapp', to: $('IA · Parsear y validar').first().json.telefono, type: 'text', text: { body: $('IA · Parsear y validar').first().json.respuesta } }) }}",
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "id": "v2n27",
+      "name": "WA · Responder [escalado]",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2180,
+        60
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 2000
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/{{ $('⚙️ CONFIG · Cliente').first().json.graph_api_version }}/{{ $('⚙️ CONFIG · Cliente').first().json.whatsapp_phone_number_id }}/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ messaging_product: 'whatsapp', to: $('IA · Parsear y validar').first().json.telefono, type: 'text', text: { body: $('IA · Parsear y validar').first().json.respuesta } }) }}",
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "id": "v2n28",
+      "name": "WA · Responder [normal]",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1940,
+        280
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 2000
+    },
+    {
+      "parameters": {
+        "jsCode": "// La llamada a OpenAI fallo (timeout, 4xx/5xx, red). Respuesta segura al cliente.\nconst msgData = $('Validar y Extraer Mensaje').first().json;\nconst err = $input.first().json;\nreturn [{ json: {\n  telefono: msgData.telefono,\n  wamid: msgData.wamid,\n  respuesta: 'Uy, tuve un problema tecnico 😅 Dame unos minutos y escribeme de nuevo, ¿ya?',\n  workflow: 'la-pasteleria-bot-whatsapp-v2',\n  nodo: 'IA · OpenAI Chat',\n  tipo_error: 'openai_error',\n  mensaje_error: String(err?.error?.message || err?.message || JSON.stringify(err || {})).slice(0, 300),\n  fecha: $now.toISO()\n} }];"
+      },
+      "id": "v2n29",
+      "name": "Error IA · Fallback",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1220,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/{{ $('⚙️ CONFIG · Cliente').first().json.graph_api_version }}/{{ $('⚙️ CONFIG · Cliente').first().json.whatsapp_phone_number_id }}/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ messaging_product: 'whatsapp', to: $json.telefono, type: 'text', text: { body: $json.respuesta } }) }}",
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "id": "v2n30",
+      "name": "WA · Responder [error técnico]",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1460,
+        260
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('⚙️ CONFIG · Cliente').first().json.sheet_id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Incidentes",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "fecha": "={{ $json.fecha }}",
+            "workflow": "={{ $json.workflow }}",
+            "nodo": "={{ $json.nodo }}",
+            "tipo_error": "={{ $json.tipo_error }}",
+            "mensaje": "={{ $json.mensaje_error }}",
+            "telefono": "={{ $json.telefono }}",
+            "resuelto": "no"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "workflow",
+              "displayName": "workflow",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nodo",
+              "displayName": "nodo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "tipo_error",
+              "displayName": "tipo_error",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "mensaje",
+              "displayName": "mensaje",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "telefono",
+              "displayName": "telefono",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "resuelto",
+              "displayName": "resuelto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "v2n31",
+      "name": "Error · Registrar incidente",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1460,
+        420
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "content": "## 🧁 Bot WhatsApp v2 — LUMENHASH\n\n**IMPORTAR DESACTIVADO. NO ACTIVAR SIN APROBACIÓN.**\n\nAntes de probar, reemplazar:\n1. `REEMPLAZAR_VERIFY_TOKEN` (nodo GET · ¿Token válido?)\n2. `REEMPLAZAR_SHEET_ID`, `REEMPLAZAR_CALENDAR_ID`, `REEMPLAZAR_EMAIL_ENCARGADA`, `REEMPLAZAR_PHONE_NUMBER_ID` (nodo ⚙️ CONFIG · Cliente)\n3. Asignar credenciales: Google Sheets, Calendar, Gmail, OpenAI, WhatsApp\n\nRuta webhook: `/lapasteleria-whatsapp-v2` (no choca con producción).\nVer docs/CONFIGURACION.md",
+        "width": 420,
+        "height": 300
+      },
+      "id": "v2s32",
+      "name": "Nota 32",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1180,
+        -640
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Verificación GET de Meta\nValida `hub.verify_token` antes de devolver el challenge (la v1 respondía a cualquiera).",
+        "width": 280,
+        "height": 120
+      },
+      "id": "v2s33",
+      "name": "Nota 33",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -960,
+        -520
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Validación + Dedup\n- Lee el payload desde `$json.body.entry` (fix del bug crítico C1)\n- Descarta payloads de estado (delivered/read) y sin texto\n- Multimedia → la IA pide texto\n- Teléfono normalizado: solo dígitos\n- `wamid` registrado en hoja MensajesProcesados → los reintentos de Meta no duplican nada (C4)",
+        "width": 420,
+        "height": 220
+      },
+      "id": "v2s34",
+      "name": "Nota 34",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -700,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## IA\nOpenAI Chat Completions (gpt-4o-mini, temp 0.3).\nEl prompt exige fecha + hora de retiro y JSON estricto.\nLa confirmación NO la decide el modelo: el nodo 'IA · Parsear y validar' revalida nombre, productos, fecha futura, horario 09:00–21:30 y 24 h para tortas (C2, C3).\nSi OpenAI falla → respuesta segura + incidente registrado.",
+        "width": 400,
+        "height": 220
+      },
+      "id": "v2s35",
+      "name": "Nota 35",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        740,
+        -160
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Ramas\n1. `pedido_confirmado === true` → registrar → Calendar (fecha REAL con zona America/Santiago) → correo → WhatsApp\n2. `escalar_humano` → alerta Gmail → WhatsApp\n3. default → respuesta normal (JSON.stringify: fix bug comillas A6)\n\nErrores de Sheets/Calendar/Gmail no cortan la cadena (onError: continue).",
+        "width": 460,
+        "height": 220
+      },
+      "id": "v2s36",
+      "name": "Nota 36",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2180,
+        -440
+      ]
+    }
+  ],
+  "connections": {
+    "GET · Verificación Meta": {
+      "main": [
+        [
+          {
+            "node": "GET · ¿Token válido?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET · ¿Token válido?": {
+      "main": [
+        [
+          {
+            "node": "GET · Responder challenge",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "GET · Responder 403",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "POST · Webhook Meta": {
+      "main": [
+        [
+          {
+            "node": "POST · ACK 200",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "⚙️ CONFIG · Cliente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⚙️ CONFIG · Cliente": {
+      "main": [
+        [
+          {
+            "node": "Validar y Extraer Mensaje",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validar y Extraer Mensaje": {
+      "main": [
+        [
+          {
+            "node": "¿Mensaje procesable?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Mensaje procesable?": {
+      "main": [
+        [
+          {
+            "node": "Dedup · Buscar wamid",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fin · Payload descartado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dedup · Buscar wamid": {
+      "main": [
+        [
+          {
+            "node": "¿Mensaje duplicado?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Mensaje duplicado?": {
+      "main": [
+        [
+          {
+            "node": "Fin · Mensaje duplicado",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Dedup · Registrar wamid",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dedup · Registrar wamid": {
+      "main": [
+        [
+          {
+            "node": "Estado · Leer conversación",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Estado · Leer conversación": {
+      "main": [
+        [
+          {
+            "node": "IA · Preparar contexto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IA · Preparar contexto": {
+      "main": [
+        [
+          {
+            "node": "IA · OpenAI Chat",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IA · OpenAI Chat": {
+      "main": [
+        [
+          {
+            "node": "IA · Parsear y validar",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error IA · Fallback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IA · Parsear y validar": {
+      "main": [
+        [
+          {
+            "node": "Estado · Guardar conversación",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Estado · Guardar conversación": {
+      "main": [
+        [
+          {
+            "node": "Switch · Acción",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch · Acción": {
+      "main": [
+        [
+          {
+            "node": "Pedido · Código y evento",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Escalar · Correo alerta [Gmail]",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "WA · Responder [normal]",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pedido · Código y evento": {
+      "main": [
+        [
+          {
+            "node": "Pedido · Registrar [Sheets]",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pedido · Registrar [Sheets]": {
+      "main": [
+        [
+          {
+            "node": "Pedido · Evento [Calendar]",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pedido · Evento [Calendar]": {
+      "main": [
+        [
+          {
+            "node": "Pedido · Correo encargada [Gmail]",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pedido · Correo encargada [Gmail]": {
+      "main": [
+        [
+          {
+            "node": "WA · Responder [pedido ✓]",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Escalar · Correo alerta [Gmail]": {
+      "main": [
+        [
+          {
+            "node": "WA · Responder [escalado]",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error IA · Fallback": {
+      "main": [
+        [
+          {
+            "node": "WA · Responder [error técnico]",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Error · Registrar incidente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Santiago"
+  },
+  "tags": []
+}
