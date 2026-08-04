@@ -1,0 +1,39 @@
+{
+  "object": "whatsapp_business_account",
+  "entry": [
+    {
+      "id": "123456789",
+      "changes": [
+        {
+          "value": {
+            "messaging_product": "whatsapp",
+            "metadata": {
+              "display_phone_number": "56911111111",
+              "phone_number_id": "REEMPLAZAR_PHONE_NUMBER_ID"
+            },
+            "contacts": [
+              {
+                "profile": {
+                  "name": "Camila Rojas"
+                },
+                "wa_id": "56900000001"
+              }
+            ],
+            "messages": [
+              {
+                "from": "56900000001",
+                "id": "wamid.TEST.PROHAUSEN.0001",
+                "timestamp": "1785800000",
+                "text": {
+                  "body": "Busco un departamento para comprar en Las Condes, 2 dormitorios y hasta 220 millones. Tengo crédito preaprobado y quiero comprar dentro de 3 meses."
+                },
+                "type": "text"
+              }
+            ]
+          },
+          "field": "messages"
+        }
+      ]
+    }
+  ]
+}
