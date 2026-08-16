@@ -1,5 +1,18 @@
 /*!
  * LUMEN Chat Widget — Lumen Labs (lumenhash.cl)
+ * Sin dependencias. Un solo archivo. Se auto-inyecta al cargar.
+ *
+ * Uso:
+ *   Pega esta etiqueta antes de cerrar el body (ver README):
+ *   script src="/lumen-chat.js"
+ *          data-webhook="https://lumenhashspa.app.n8n.cloud/webhook/lumen-chat" defer
+ *
+ * Atributos opcionales:
+ *   data-titulo      Título del panel            (def. "LUMEN")
+ *   data-subtitulo   Bajada del header           (def. "Asistente de Lumen Labs")
+ *   data-saludo      Primer mensaje del bot
+ *   data-posicion    "right" | "left"            (def. "right")
+ *   data-autoabrir   Segundos para abrir solo; 0 = nunca (def. 0)
  */
 (function () {
   "use strict";
@@ -54,6 +67,8 @@
     '-webkit-font-smoothing:antialiased}',
     '#lumen-root[data-pos="right"]{right:20px;align-items:flex-end}',
     '#lumen-root[data-pos="left"]{left:20px;align-items:flex-start}',
+
+    /* burbuja */
     '#lumen-fab{width:60px;height:60px;border:0;border-radius:50%;cursor:pointer;',
     'background:linear-gradient(145deg,var(--lx-amber),var(--lx-copper));',
     'box-shadow:0 10px 30px rgba(208,80,8,.42);display:flex;align-items:center;justify-content:center;',
@@ -66,12 +81,16 @@
     'background:#39D98A;border:2.5px solid var(--lx-bg)}',
     '#lumen-root.abierto #lumen-fab{transform:scale(.85);opacity:0}',
     '#lumen-root.abierto #lumen-fab{pointer-events:none}',
+
+    /* panel */
     '#lumen-panel{width:376px;max-width:calc(100vw - 32px);height:558px;max-height:calc(100vh - 110px);',
     'background:var(--lx-bg);border:1px solid var(--lx-line);border-radius:18px;overflow:hidden;',
     'display:none;flex-direction:column;box-shadow:0 26px 70px rgba(0,0,0,.62);',
     'opacity:0;transform:translateY(14px) scale(.98);transition:opacity .2s ease,transform .2s ease}',
     '#lumen-root.abierto #lumen-panel{display:flex}',
     '#lumen-root.visible #lumen-panel{opacity:1;transform:none}',
+
+    /* header */
     '#lumen-head{display:flex;align-items:center;gap:11px;padding:15px 16px;',
     'background:linear-gradient(160deg,#1A1C24,#101218);border-bottom:1px solid var(--lx-line);flex:0 0 auto}',
     '#lumen-mark{width:36px;height:36px;border-radius:10px;flex:0 0 auto;',
@@ -84,6 +103,8 @@
     '#lumen-close{margin-left:auto;background:transparent;border:0;color:var(--lx-muted);cursor:pointer;',
     'width:30px;height:30px;border-radius:8px;font-size:21px;line-height:1;transition:.15s}',
     '#lumen-close:hover{background:rgba(255,255,255,.07);color:var(--lx-text)}',
+
+    /* mensajes */
     '#lumen-msgs{flex:1 1 auto;overflow-y:auto;padding:18px 16px;display:flex;flex-direction:column;gap:11px;',
     'scrollbar-width:thin;scrollbar-color:var(--lx-line) transparent}',
     '#lumen-msgs::-webkit-scrollbar{width:7px}',
@@ -98,6 +119,8 @@
     '.lx-err{align-self:flex-start;background:rgba(208,80,8,.12);border:1px solid rgba(208,80,8,.4);',
     'color:var(--lx-gold);border-radius:14px;font-size:13px}',
     '.lx-m a{color:var(--lx-gold)}',
+
+    /* typing */
     '#lumen-typing{align-self:flex-start;display:none;gap:4px;padding:12px 14px;background:var(--lx-surface);',
     'border:1px solid var(--lx-line);border-radius:14px 14px 14px 4px}',
     '#lumen-typing.on{display:flex}',
@@ -106,10 +129,14 @@
     '#lumen-typing span:nth-child(2){animation-delay:.18s}',
     '#lumen-typing span:nth-child(3){animation-delay:.36s}',
     '@keyframes lx-b{0%,60%,100%{opacity:.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-4px)}}',
+
+    /* sugerencias */
     '#lumen-chips{display:flex;flex-wrap:wrap;gap:7px;padding:0 16px 12px}',
     '#lumen-chips button{background:transparent;border:1px solid var(--lx-line);color:var(--lx-gold);',
     'border-radius:999px;padding:7px 13px;font-size:12.5px;cursor:pointer;font-family:inherit;transition:.15s}',
     '#lumen-chips button:hover{border-color:var(--lx-amber);background:rgba(255,154,60,.1)}',
+
+    /* input */
     '#lumen-foot{flex:0 0 auto;border-top:1px solid var(--lx-line);background:#0F1116;padding:11px 12px}',
     '#lumen-form{display:flex;gap:9px;align-items:flex-end}',
     '#lumen-in{flex:1;background:var(--lx-surface);border:1px solid var(--lx-line);border-radius:12px;',
@@ -124,6 +151,7 @@
     '#lumen-send:not(:disabled):hover{transform:translateY(-1px)}',
     '#lumen-send svg{width:18px;height:18px}',
     '#lumen-legal{text-align:center;color:#5C6373;font-size:10.5px;margin-top:8px;letter-spacing:.02em}',
+
     '@media(max-width:480px){',
     '#lumen-root{bottom:14px;right:14px;left:14px}',
     '#lumen-panel{width:100%;height:calc(100vh - 96px)}',
@@ -133,6 +161,7 @@
 
   var ICON_SPARK = '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.2 5.4L20 10.5l-5.8 2.1L12 18l-2.2-5.4L4 10.5l5.8-2.1z"/><path d="M18.5 16.5l.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9z"/></svg>';
 
+  /* ---------- markup ---------- */
   var style = document.createElement("style");
   style.id = "lumen-style";
   style.textContent = CSS;
@@ -165,7 +194,8 @@
     '<button id="lumen-fab" aria-label="Abrir chat con LUMEN">' + ICON_SPARK + '<span id="lumen-dot"></span></button>';
   document.body.appendChild(root);
 
-  var $fab = root.querySelector("#lumen-fab"),
+  var $panel = root.querySelector("#lumen-panel"),
+      $fab = root.querySelector("#lumen-fab"),
       $close = root.querySelector("#lumen-close"),
       $msgs = root.querySelector("#lumen-msgs"),
       $typing = root.querySelector("#lumen-typing"),
@@ -177,6 +207,7 @@
 
   var abierto = false, ocupado = false, arrancado = false;
 
+  /* ---------- helpers ---------- */
   function esc(t) {
     return String(t).replace(/[&<>"']/g, function (c) {
       return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
@@ -184,142 +215,6 @@
   }
 
   function linkear(t) {
-    return esc(t)
-      .replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>')
-      .replace(/([\w.+-]+@[\w-]+\.[\w.]+)/g, '<a href="mailto:$1">$1</a>')
-      .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
-  }
-
-  function abajo() { $msgs.scrollTop = $msgs.scrollHeight; }
-
-  function pintar(texto, clase) {
-    var d = document.createElement("div");
-    d.className = "lx-m " + clase;
-    if (clase === "lx-user") { d.textContent = texto; } else { d.innerHTML = linkear(texto); }
-    $msgs.insertBefore(d, $typing);
-    abajo();
-    return d;
-  }
-
-  function chips(lista) {
-    $chips.innerHTML = "";
-    if (!lista || !lista.length) return;
-    lista.forEach(function (t) {
-      var b = document.createElement("button");
-      b.type = "button";
-      b.textContent = t;
-      b.addEventListener("click", function () { $chips.innerHTML = ""; enviar(t); });
-      $chips.appendChild(b);
-    });
-  }
-
-  function pensando(on) {
-    $typing.classList.toggle("on", on);
-    $typing.setAttribute("aria-hidden", on ? "false" : "true");
-    if (on) abajo();
-  }
-
-  function bloquear(on) {
-    ocupado = on;
-    $send.disabled = on;
-    $in.disabled = on;
-    if (!on) $in.focus();
-  }
-
-  function enviar(texto) {
-    texto = (texto || "").trim();
-    if (!texto || ocupado) return;
-
-    pintar(texto, "lx-user");
-    $in.value = "";
-    $in.style.height = "auto";
-    $chips.innerHTML = "";
-    bloquear(true);
-    pensando(true);
-
-    var ctrl = typeof AbortController !== "undefined" ? new AbortController() : null;
-    var tOut = setTimeout(function () { if (ctrl) ctrl.abort(); }, 45000);
-
-    fetch(CFG.webhook, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        sessionId: sessionId,
-        message: texto,
-        page: location.pathname + location.search
-      }),
-      signal: ctrl ? ctrl.signal : undefined
-    })
-      .then(function (r) {
-        if (!r.ok) throw new Error("HTTP " + r.status);
-        return r.json();
-      })
-      .then(function (data) {
-        var d = Array.isArray(data) ? data[0] : data;
-        var txt = (d && (d.reply || d.output || d.text || d.message)) || "";
-        if (!txt) throw new Error("respuesta vacia");
-        pintar(txt, "lx-bot");
-      })
-      .catch(function (err) {
-        console.warn("[LUMEN]", err);
-        pintar(
-          "Se me cortó la conexión. Inténtalo de nuevo en un momento, o escríbenos a contacto@lumenhash.cl y te respondemos hoy.",
-          "lx-err"
-        );
-      })
-      .then(function () {
-        clearTimeout(tOut);
-        pensando(false);
-        bloquear(false);
-      });
-  }
-
-  function abrir() {
-    if (abierto) return;
-    abierto = true;
-    root.classList.add("abierto");
-    $dot.style.display = "none";
-    requestAnimationFrame(function () { root.classList.add("visible"); });
-    if (!arrancado) {
-      arrancado = true;
-      setTimeout(function () {
-        pintar(CFG.saludo, "lx-bot");
-        chips(SUGERENCIAS);
-      }, 260);
-    }
-    setTimeout(function () { $in.focus(); }, 320);
-  }
-
-  function cerrar() {
-    if (!abierto) return;
-    abierto = false;
-    root.classList.remove("visible");
-    setTimeout(function () { root.classList.remove("abierto"); }, 200);
-    $fab.focus();
-  }
-
-  $fab.addEventListener("click", abrir);
-  $close.addEventListener("click", cerrar);
-
-  $form.addEventListener("submit", function (e) {
-    e.preventDefault();
-    enviar($in.value);
-  });
-
-  $in.addEventListener("keydown", function (e) {
-    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); enviar($in.value); }
-  });
-
-  $in.addEventListener("input", function () {
-    $in.style.height = "auto";
-    $in.style.height = Math.min($in.scrollHeight, 104) + "px";
-  });
-
-  document.addEventListener("keydown", function (e) {
-    if (e.key === "Escape" && abierto) cerrar();
-  });
-
-  if (CFG.autoabrir > 0) setTimeout(abrir, CFG.autoabrir * 1000);
-
-  window.LumenChat = { abrir: abrir, cerrar: cerrar, enviar: enviar, sessionId: sessionId };
-})();
+    var s = esc(t);
+    var guardados = [];
+    function guardar(html) { guardados.push(html); return "
