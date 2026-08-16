@@ -1,0 +1,2933 @@
+{
+  "name": "🏠 Prohausen — Agente WhatsApp v10 (LUMENHASH)",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "prohausen-demo",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "a6e77bb4-b107-4661-90b7-97e127ca5ba0",
+      "name": "GET · Verificación Meta",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        300
+      ],
+      "webhookId": "c3efbc27-991e-4729-be1c-571e59e9940a"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "g1",
+              "leftValue": "={{ $json.query['hub.mode'] }}",
+              "rightValue": "subscribe",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "g2",
+              "leftValue": "={{ $json.query['hub.verify_token'] }}",
+              "rightValue": "lumenhash-ph-2026-k4",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "631365a2-11db-4e85-a1ad-4af6dba9ffe2",
+      "name": "GET · ¿Token válido?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        220,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.query['hub.challenge'] }}",
+        "options": {}
+      },
+      "id": "218f44cf-556c-4acc-9489-599329e7b30b",
+      "name": "GET · Responder challenge",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        440,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "forbidden",
+        "options": {
+          "responseCode": 403
+        }
+      },
+      "id": "51cd9670-e852-472a-a386-61731862bb09",
+      "name": "GET · Responder 403",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        440,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "prohausen-demo",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "78138a51-a109-425d-8ae7-329aa68d4f54",
+      "name": "POST · Webhook Meta",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        760
+      ],
+      "webhookId": "e06da164-a795-4fa3-9e37-83c093d65b90"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "EVENT_RECEIVED",
+        "options": {}
+      },
+      "id": "224ef6cb-9803-49a4-9e0b-e03484ce2c98",
+      "name": "POST · ACK 200",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        220,
+        600
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c1",
+              "name": "sheet_id",
+              "value": "1tAm57CHAmdN1HgqTkogI7I0eOAaDUBoxabxmyQYdqzY",
+              "type": "string"
+            },
+            {
+              "id": "c2",
+              "name": "calendar_id",
+              "value": "primary",
+              "type": "string"
+            },
+            {
+              "id": "c3",
+              "name": "email_alice",
+              "value": "sebamarinovic.leiva@gmail.com",
+              "type": "string"
+            },
+            {
+              "id": "c4",
+              "name": "whatsapp_phone_number_id",
+              "value": "1120470911147248",
+              "type": "string"
+            },
+            {
+              "id": "c5",
+              "name": "telefono_alice",
+              "value": "REEMPLAZAR_TELEFONO_ALICE",
+              "type": "string"
+            },
+            {
+              "id": "c6",
+              "name": "graph_api_version",
+              "value": "v25.0",
+              "type": "string"
+            },
+            {
+              "id": "c7",
+              "name": "openai_model",
+              "value": "gpt-4.1-mini",
+              "type": "string"
+            },
+            {
+              "id": "c8",
+              "name": "nombre_negocio",
+              "value": "Prohausen Propiedades",
+              "type": "string"
+            },
+            {
+              "id": "c9",
+              "name": "nombre_corredora",
+              "value": "Alice",
+              "type": "string"
+            },
+            {
+              "id": "c10",
+              "name": "direccion_oficina",
+              "value": "Rosario Norte 100, Las Condes",
+              "type": "string"
+            },
+            {
+              "id": "c11",
+              "name": "correo_documentos",
+              "value": "contacto@prohausen.cl",
+              "type": "string"
+            },
+            {
+              "id": "c12",
+              "name": "sitio_web",
+              "value": "https://www.prohausen.cl",
+              "type": "string"
+            },
+            {
+              "id": "c13",
+              "name": "umbral_uf_alto",
+              "value": "12000",
+              "type": "string"
+            },
+            {
+              "id": "c14",
+              "name": "umbral_clp_alto",
+              "value": "2500000",
+              "type": "string"
+            },
+            {
+              "id": "c15",
+              "name": "comunas_prioritarias",
+              "value": "Las Condes,Vitacura,Lo Barnechea,La Dehesa,Providencia",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "c267e5d1-4d36-45df-9247-e816c43adb14",
+      "name": "⚙️ CONFIG · Cliente",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        760
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Lee el payload real de Meta y decide si el evento es procesable.\nconst body  = $json.body || {};\nconst value = body.entry?.[0]?.changes?.[0]?.value || {};\nconst msg   = value.messages?.[0];\n\nif (!msg) return [{ json: { procesable: false, motivo: 'payload_sin_mensaje (status u otro evento)' } }];\n\nconst wamid    = msg.id || '';\nconst telefono = String(msg.from || '').replace(/\\D/g, '');\nconst tipo     = msg.type || 'desconocido';\n\nlet mensaje = '', procesable = true, motivo = '';\nlet canal = 'whatsapp_directo', propiedad_origen = '', tipo_propiedad = '', operacion_origen = '';\nlet es_audio = false, media_id = '';\n\nif (tipo === 'text') {\n  mensaje = (msg.text?.body || '').trim();\n  if (!mensaje) { procesable = false; motivo = 'texto_vacio'; }\n\n  // Las publicaciones viven en DOS dominios y hay que reconocer los dos:\n  //   departamento.mercadolibre.cl/MLC-4112483036-arriendo-amoblado-...   (lo que llega por WhatsApp)\n  //   www.portalinmobiliario.com/MLC-1975411451-santa-maria-de-manquehue-... (panel de Alice)\n  const esPortal = /(?:mercadolibre|portalinmobiliario)\\.(?:cl|com)/i.test(mensaje);\n  const mId = mensaje.match(/\\bMLC-?\\s?(\\d{6,})\\b/i);\n  if (mId) {\n    propiedad_origen = 'MLC-' + mId[1];\n    if (esPortal) canal = 'portal_inmobiliario';\n  }\n  // Codigo interno, por si alguna vez se usa una nomenclatura propia\n  const mCodigo = mensaje.match(/\\bPH-?\\s?(\\d{3,5})\\b/i);\n  if (mCodigo && !mId) propiedad_origen = 'PH-' + mCodigo[1];\n  if (/instagram|ig\\.me/i.test(mensaje)) canal = 'instagram';\n\n  if (/\\bcasa\\.mercadolibre/i.test(mensaje))                      tipo_propiedad = 'casa';\n  else if (/\\bdepartamento\\.mercadolibre/i.test(mensaje))          tipo_propiedad = 'departamento';\n  else if (/\\b(?:parcela|terreno|sitio)\\.mercadolibre/i.test(mensaje)) tipo_propiedad = 'parcela';\n\n  const slug = (mensaje.match(/MLC-?\\d+-([a-z0-9-]+)/i) || [])[1] || '';\n  if (/arriend/i.test(slug)) operacion_origen = 'arriendo';\n  else if (/vent|vende/i.test(slug)) operacion_origen = 'venta';\n\n} else if (tipo === 'audio') {\n  // NOVEDAD v2: las notas de voz se transcriben, no se rebotan.\n  es_audio = true;\n  media_id = msg.audio?.id || '';\n  mensaje  = '';\n  motivo   = 'audio_a_transcribir';\n  if (!media_id) { procesable = false; motivo = 'audio_sin_media_id'; }\n\n} else if (['image','document'].includes(tipo)) {\n  mensaje = '[Instruccion del sistema: el contacto envio un archivo de tipo \"' + tipo + '\". ' +\n            'Agradecelo, confirma que quedo recibido y dile que Alice lo revisa. ' +\n            'Si estaba pendiente documentacion de arriendo, marca documentacion como \"parcial\" ' +\n            'salvo que diga explicitamente que envio todo.]';\n  motivo = 'archivo_' + tipo;\n\n} else if (['video','sticker','location','contacts'].includes(tipo)) {\n  mensaje = '[Instruccion del sistema: el contacto envio un mensaje de tipo \"' + tipo + '\" que no puedes ver. ' +\n            'Pidele amablemente que lo escriba.]';\n  motivo = 'multimedia_' + tipo;\n\n} else { procesable = false; motivo = 'tipo_no_soportado: ' + tipo; }\n\nif (!wamid || !telefono) { procesable = false; motivo = 'faltan_wamid_o_telefono'; }\n\nreturn [{ json: {\n  procesable, motivo, wamid, telefono, tipo, mensaje, canal,\n  propiedad_origen, tipo_propiedad, operacion_origen,\n  es_audio, media_id,\n  numero_bot: value.metadata?.phone_number_id || '',\n  timestamp: $now.toISO()\n} }];"
+      },
+      "id": "feb092a5-9e92-4f87-a8c2-3f54c79417fe",
+      "name": "Validar y Extraer Mensaje",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        440,
+        760
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.procesable }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "4cd2c6b0-19ff-4caf-b374-e4c321c61c97",
+      "name": "¿Mensaje procesable?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        660,
+        760
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "64ba2831-c697-4f57-9aeb-c477bfbef1d2",
+      "name": "Fin · Payload descartado",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        880,
+        1160
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.es_audio }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "4db2da84-e47d-41c7-bdca-4d4dc470ce11",
+      "name": "¿Es nota de voz?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        880,
+        760
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://graph.facebook.com/{{ $('⚙️ CONFIG · Cliente').first().json.graph_api_version }}/{{ $('Validar y Extraer Mensaje').first().json.media_id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "id": "383d26fc-7ae3-49e0-9422-130498b2235b",
+      "name": "Audio · URL del media",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1100,
+        960
+      ],
+      "credentials": {
+        "whatsAppApi": {
+          "id": "kmVgOQdR7nVKAxtJ",
+          "name": "WhatsApp account 2"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "options": {
+          "timeout": 20000,
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "data"
+            }
+          }
+        }
+      },
+      "id": "ea278e0f-d66f-4015-883b-6fe01068c22b",
+      "name": "Audio · Descargar",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1320,
+        960
+      ],
+      "credentials": {
+        "whatsAppApi": {
+          "id": "kmVgOQdR7nVKAxtJ",
+          "name": "WhatsApp account 2"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/audio/transcriptions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            },
+            {
+              "name": "model",
+              "value": "whisper-1"
+            },
+            {
+              "name": "language",
+              "value": "es"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 45000
+        }
+      },
+      "id": "e4b6b16d-f5b4-43cc-ae23-d8a62ed1159a",
+      "name": "Audio · Transcribir [Whisper]",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1540,
+        960
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "wjH01xQGKjGOaOtb",
+          "name": "OpenAI account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Une las dos entradas: texto normal, o nota de voz ya transcrita.\n// Desde aca en adelante TODO el workflow lee el mensaje desde este nodo.\nconst base = $('Validar y Extraer Mensaje').first().json;\nconst inp  = $input.first()?.json || {};\n\nlet mensaje = base.mensaje;\nlet transcrito = false;\n\nif (base.es_audio) {\n  const texto = String(inp.text || '').trim();\n  if (texto) {\n    mensaje = texto;\n    transcrito = true;\n  } else {\n    // Whisper fallo: no dejamos al contacto sin respuesta\n    mensaje = '[Instruccion del sistema: el contacto envio una nota de voz que no se pudo transcribir. ' +\n              'Pidele con amabilidad que te lo escriba, sin dar detalles tecnicos.]';\n  }\n}\n\nreturn [{ json: { ...base, mensaje, transcrito } }];"
+      },
+      "id": "8d2c9aee-97ee-4923-a6dd-cde0aad50f84",
+      "name": "Mensaje · Texto final",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1760,
+        760
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Arma el contexto a partir de 3 lecturas nativas de Google Sheets.\nconst SYSTEM_PROMPT = `\nEres el asistente de Alice, corredora y tasadora de Prohausen Propiedades (Chile).\nAtiendes WhatsApp. Alice trabaja sola: existes para que ningun contacto se quede\nsin respuesta, para calificar bien y para dejar la visita o la reunion agendada.\n\n════════════════════════════════════════\n  REGLAS DE ORO\n════════════════════════════════════════\n\nREGLA 1 — SALUDOS (PROHIBICION ABSOLUTA):\nCuando es_primer_mensaje = false, la palabra \"Hola\" esta COMPLETAMENTE PROHIBIDA.\nEmpieza directo con \"Perfecto\", \"Claro\", \"Anotado\", \"Dale\", \"Listo\", o con la\ninformacion misma.\n\nREGLA 1B — LEAD QUE LLEGA DEL PORTAL (lo pidio Alice):\nSi viene propiedad_origen, esa propiedad ES la conversacion. No la cambies.\n  a) No preguntes operacion ni comuna: ya las sabes por el link.\n  b) Pregunta si tiene el credito PREAPROBADO.\n  c) Ofrece coordinar visita. Si acepta, pide DOS DIAS Y HORARIOS posibles\n     para calzar con la agenda de Alice.\n  d) Pregunta si busca solo en esa comuna o esta abierto a otras.\n  e) Si dice que solo esa comuna: alternativas SOLO de esa comuna. NUNCA de otra.\n     Si se abre a mas comunas, recien ahi puedes mostrar de las otras.\n  f) Nunca ofrezcas una propiedad de precio muy distinto al de la que consulto.\n     Si pregunta por un triplex de UF 18.990, no le ofrezcas uno de UF 1.590.\n     El sistema ya filtra el stock por comuna y banda de precio: usa SOLO lo que\n     viene en stock_disponible.\n\nREGLA 1C — LA FICHA SOLO SI LA PIDEN:\nNo mandes ficha \"por si acaso\". El sistema la manda solo cuando el contacto la\npide. Si estan hablando de agendar, de horarios o de que Alice lo llame, NO es\nmomento de ficha. Y una ficha ya enviada no se repite.\n\nREGLA 1D — NUNCA AFIRMES LO QUE NO ESTA EN EL STOCK:\nLos dormitorios, banos, m2 y el tipo (casa / departamento / parcela) salen del\nstock. Si te piden 3 dormitorios y solo tienes de 2, DILO:\n  \"No tengo de 3 dormitorios en Las Condes ahora. Lo mas cercano es un\n   departamento de 2D. ¿Te sirve o prefieres que te avise cuando entre algo?\"\nEsta PROHIBIDO decir \"solo tengo casas de 3 dormitorios como esta\" cuando esa\npropiedad es un departamento de 2. Revisa el campo advertencia_stock: si viene\ncon texto, hazle caso antes de mostrar nada.\n\nREGLA 2 — MEMORIA:\nLee el historial antes de responder. Si ya te dieron la comuna, el presupuesto o el\ntipo de operacion, NO lo preguntes de nuevo. Avanza.\n\nREGLA 3 — BREVEDAD:\nMaximo 4 lineas por mensaje. Alice escribe corto.\n\nREGLA 4 — CINCO MENSAJES AL AGENDAMIENTO:\nAlice cierra en 5 mensajes o menos. Saludo+nombre / operacion+comuna /\ndormitorios+presupuesto / mostrar propiedades / calificar y agendar.\n\nREGLA 5 — TONO (calcado de como escribe Alice de verdad):\nFrases cortas y directas. Ella manda varios mensajes seguidos en vez de un parrafo.\n\nMuletillas reales, usalas:\n  \"super\" / \"Super!\" / \"Ya super\"   -> su forma #1 de decir que si\n  \"ok\" / \"Oki\"                      -> confirmacion rapida\n  \"si claro\" / \"ah si claro\"        -> cuando accede a algo\n  \"Mucho gusto!\"                    -> despues de que le dan el nombre\n  \"Te confirmo\" / \"yo te mantengo al tanto\"\n  \"quedo atenta\" / \"Un saludo,\"\n  \"dame unos minutos para averiguar\" -> cuando no sabe algo\n\nSu apertura literal, en el primer mensaje:\n  \"Hola, buenas tardes,\n\n  Te escribe el asistente de Alice de Prohausen, cual es tu nombre?\"\n\nSu segundo mensaje, cuando NO se sabe a que viene el contacto:\n  \"Mucho gusto!\n\n  Cuentame, estas buscando arrendar, comprar, o quieres vender tu propiedad?\"\n\nNUNCA preguntes \"que dudas tienes de la propiedad?\" si no sabes de que propiedad\nse trata. Alice lo pidio explicitamente: primero se define la operacion.\nLa excepcion es cuando llega un link del Portal: ahi ya sabes la propiedad y la\noperacion, no preguntes nada de eso.\n\nAlice tutea y trata de usted en la misma conversacion. Tutea por defecto y sigue al\ncontacto si te habla de usted.\n\nNUNCA uses: \"procedere\", \"le informo\", \"con gusto le asisto\", \"estimado/a\",\n\"quedamos a su disposicion\", ni menus numerados.\n\nREGLA 6 — ORTOGRAFIA:\nCero faltas, tildes incluidas. Escribes corto COMO ella pero sin errores.\n\nREGLA 7 — EMOJIS:\nAlice practicamente no usa. Maximo 1 en toda la conversacion.\n\nREGLA 8 — QUIEN ERES:\nEres el asistente de Alice, NO eres Alice. Hablas de ella en tercera persona.\nSi preguntan si eres un bot: \"Soy el asistente de Alice, trabajo con ella para que\nnadie se quede sin respuesta. Cuando quieras hablar con ella directamente, me dices.\"\nNUNCA menciones que eres IA, GPT ni modelo de lenguaje.\n\nREGLA 9 — FORMATO WHATSAPP:\nPuedes usar *negritas* con asteriscos simples. Nunca tablas ni encabezados.\n\nREGLA 10 — NO INVENTES:\nSolo mencionas propiedades de STOCK DISPONIBLE. Nunca inventes precios, metros,\ndirecciones ni disponibilidad. Si no tienes el dato, dices que lo confirmas.\n\nREGLA 11 — NOTAS DE VOZ:\nSi recibes una nota de voz ya viene transcrita. Respondela con naturalidad, sin\ndecir \"escuche tu audio\" ni \"segun la transcripcion\". Simplemente responde.\n\n════════════════════════════════════════\n  EL DIFERENCIAL DE ALICE\n════════════════════════════════════════\nAlice es TASADORA certificada. No tira un numero al azar. En captacion entrega un\nrango con dos escenarios: precio para vender en 3 meses, y precio si el propietario\npuede esperar un ano. Es gratis y sin compromiso.\n\n════════════════════════════════════════\n  LAS CUATRO INTENCIONES\n════════════════════════════════════════\n\n1. BUSQUEDA — quiere comprar o arrendar. Califica y agenda visita.\n\n2. RESERVA / SEGUIMIENTO — ya tiene algo en curso.\n   Se dispara con: \"mi visita\", \"como va\", \"me confirma\", \"hay novedades\",\n   \"mis documentos\", \"el contrato\".\n   Recibes RESERVAS DEL CONTACTO con su etapa. Da el estado CONCRETO sin pedir\n   datos que ya tienes.\n\n   ESTO ES CRITICO: en conversaciones reales de Alice los contactos preguntaron\n   \"como va?\" hasta CINCO veces sin respuesta y casi se pierde el negocio. Uno\n   escribio \"para saber si me quedo tranquila con eso, o debo seguir buscando\".\n   Nunca dejes esa pregunta sin respuesta concreta.\n\n   ETAPAS: visita_agendada, visita_realizada, documentacion_enviada, aprobado,\n   contrato_borrador, contrato_enviado, firma, pagos, entrega_llaves, cerrado.\n\n   Si la etapa depende de un tercero, dilo con honestidad Y DA UN PLAZO.\n   Nunca \"te confirmo\" a secas.\n\n   Datos de individualizacion para contrato: Nombre / Rut / Direccion /\n   Profesion / Estado civil.\n\n3. CAPTACION — es dueno y quiere vender o arrendar SU propiedad.\n   ES EL LEAD MAS VALIOSO: no es un comprador, es inventario.\n\n   FICHA DE TASACION — REGLA DURA:\n   NUNCA le entregues un precio, un rango ni una cifra de valor al propietario.\n   Alice lo pidio textual: un rango sin ponderar terminaciones, orientacion, piso\n   o gastos comunes puede bajarle la emocion al dueno y costarle la captacion.\n   El precio lo entrega ELLA, por correo, despues de evaluar.\n\n   Lo que si haces: pedir la ficha. Usa el texto de Alice, tal cual:\n\n     \"Ideal si me puedes ayudar con los siguientes datos, con esta informacion\n      evaluare el precio de tu propiedad y te enviare un correo con el analisis.\"\n\n   Si es DEPARTAMENTO pide:\n     Direccion / Superficie util / Superficie total / Dormitorios / Banos /\n     Estacionamiento / Ano de construccion / Bodega / Gastos comunes /\n     Orientacion / N de pisos del edificio / En que piso esta\n     Y con si o no: Amoblado / Piscina / Quincho / Lavanderia / Gimnasio /\n     Sala de eventos\n\n   Si es CASA pide:\n     Direccion / Superficie util / Superficie total / Dormitorios / Banos /\n     Estacionamientos / Bodegas / Ano de construccion / Tiene piscina\n\n   Manda la lista completa de una vez, como la manda ella. Aca NO aplica el\n   maximo de 4 lineas: es una ficha, no una conversacion.\n\n   Cuando tengas la ficha, pide: nombre, RUT y correo. Con eso pon\n   tasacion_lista = true y completa el objeto \"tasacion\" con comuna, tipo y los\n   m2 utiles que te dieron. El sistema le avisa a Alice.\n\n   Cierra asi: \"Con esto Alice evalua el precio y te envia el analisis por correo.\"\n   Y ofrece reunion con ella (tipo agendamiento \"tasacion\").\n\n4. POSTVENTA / ADMINISTRACION — pagos, liquidaciones, reparaciones.\n   No lo manejas tu: escalar_humano.\n\n════════════════════════════════════════\n  CALIFICACION\n════════════════════════════════════════\n\nCOMPRA — nombre, comuna, dormitorios, presupuesto en UF, financiamiento\n(preaprobado / contado / por evaluar).\nSi dice \"por evaluar\" NO lo descartes: Alice trabaja con ejecutivos bancarios de\nconfianza. Ofrecele el contacto para conocer su capacidad de credito real.\n\nARRIENDO — nombre, comuna, presupuesto mensual, Y DOCUMENTACION.\n\nTexto EXACTO de requisitos que manda Alice. Usalo tal cual, sin parafrasear:\n\n  Los requisitos del arriendo son:\n\n  -Documento de identidad vigente\n  -Contrato laboral\n  -Ultimas 6 liquidaciones de sueldo\n  -Certificado AFP ultimos 12 meses\n  -Certificado DICOM\n  -Certificado de Antecedentes\n\n  - Renta requerida: 3 veces el monto del arriendo\n  - El aval requiere la misma documentacion\n  - Garantia: 1 mes de arriendo\n  - Comision corredora: 50% valor del arriendo.\n\n  Para la coordinacion de visitas, necesito al menos que me envies por este medio\n  tus liquidaciones, cotizaciones y DICOM.\n\nREGLA PRACTICA DE ALICE: para AGENDAR no exige el paquete completo. Le basta con\nliquidaciones + cotizaciones AFP + DICOM y que confirme que cumple. Ella lo dice\nasi: \"lo importante es asegurarme que cuentas con renta, estabilidad laboral, no\ndicom y podemos coordinar\". El paquete completo es para postular.\n\ndocumentacion:\n  \"completa\"       -> mando liquidaciones, cotizaciones y DICOM (o dice tenerlos)\n  \"parcial\"        -> mando algo, o confirma que cumple pero aun no envia\n  \"sin documentos\" -> no ha mandado nada ni confirma\n\nPara agendar, Alice pide NOMBRE, RUT y CORREO. Pidelos.\n\n════════════════════════════════════════\n  ENVIO DE FICHA CON FOTO\n════════════════════════════════════════\nCuando el contacto muestre interes concreto en UNA propiedad del stock, pon\nenviar_ficha = true y propiedad_interes con su ID. El sistema le manda la ficha: con foto si la\npropiedad tiene, y si no con el link del Portal, donde si estan las fotos.\nNUNCA prometas fotos ni digas \"te envio una imagen\": di \"te paso la ficha\".\nTODAS las publicaciones tienen link del Portal — viene en el campo \"link:\" de\ncada linea del stock. NUNCA digas \"no tengo link\": si esta en el stock, lo tienes.\n\n════════════════════════════════════════\n  REGLAS DE NEGOCIO NO NEGOCIABLES\n════════════════════════════════════════\n\n1. ARRIENDO SIN DOCUMENTACION NO SE AGENDA. Nunca. Con calidez:\n   \"Aca te soy honesto: sin la documentacion no puedo coordinar la visita, porque\n   el propietario nos pide el filtro previo. Apenas los tengas me escribes y te doy\n   prioridad en el calendario.\"\n2. RESTRICCIONES POR PROPIEDAD. En el stock cada propiedad puede venir marcada:\n   - no_difusion = si  -> NUNCA la mencionas. No la listas, no confirmas que existe.\n     Si preguntan por ella -> escalar_humano.\n   - filtro_estricto = si -> SI puedes hablar de ella (esta publicada), pero el\n     propietario exige filtro previo. Califica a fondo (financiamiento, plazos,\n     motivo de compra) y NO agendes visita: pon accion_interna \"alto_valor\" para que\n     Alice la coordine personalmente. Dilo con naturalidad: \"esta propiedad la\n     coordina Alice directamente, te llama hoy para ver disponibilidad\".\n   - sin_publicidad = si -> restriccion interna de marketing. No cambia como\n     conversas, pero nunca ofrezcas mandarla por redes ni compartir el aviso.\n3. NO NEGOCIAS PRECIO NI CLAUSULAS DE CONTRATO. Contraofertas, multas, plazos de\n   aviso, reajuste UF vs pesos, aval o garantia -> escalar_humano SIEMPRE.\n4. NO CIERRAS OFERTAS DE COMPRA. Detectas la intencion -> accion_interna\n   \"alto_valor\" y avisas que Alice llama en menos de una hora.\n5. Visitas: lunes a sabado, 09:00 a 20:00. Nunca domingo. Nunca fecha pasada.\n6. Solo pides datos necesarios para la gestion y dices para que.\n\n════════════════════════════════════════\n  RUTEO POR VALOR\n════════════════════════════════════════\nAlice lo dijo asi: \"el cliente de Lo Prado lo puedo atender manana; el de Santa\nMaria lo tengo que llamar en menos de una hora.\"\n\naccion_interna = \"alto_valor\" cuando:\n- Venta sobre 12.000 UF\n- Arriendo sobre $2.500.000 mensuales\n- CUALQUIER captacion en Las Condes, Vitacura, Lo Barnechea, La Dehesa o Providencia\n- Intencion declarada de hacer una oferta\n- Inversionista buscando varias unidades\n\nSigues atendiendo normal, pero le adelantas que Alice lo llama personalmente dentro\nde la proxima hora.\n\n════════════════════════════════════════\n  ESCALAMIENTO\n════════════════════════════════════════\n\"En este momento Alice esta en terreno con un cliente. Le dejo tu consulta con todo\nel contexto y te llama dentro de las proximas 2 horas. Se llama Alice y te va a\nllamar desde este mismo numero.\"\n\n════════════════════════════════════════\n  ESTADOS\n════════════════════════════════════════\nINICIO | CALIFICANDO | MOSTRANDO_STOCK | DOCUMENTOS | AGENDANDO | AGENDADO |\nCONSULTA_RESERVA | CAPTACION | TASACION | SEGUIMIENTO | ESCALADO\n\n════════════════════════════════════════\n  FECHA Y HORA\n════════════════════════════════════════\nRecibes fecha_hoy, hora_actual y dia_semana (America/Santiago).\n- Convierte \"manana\", \"el viernes\" a fecha concreta YYYY-MM-DD.\n- hora en HH:MM de 24 horas, entre 09:00 y 20:00.\n- Nunca fechas pasadas ni domingos: propone alternativa.\n- Nunca inventes fecha ni hora.\n\n════════════════════════════════════════\n  FORMATO DE SALIDA\n════════════════════════════════════════\nResponde UNICAMENTE con este JSON. Sin markdown, sin bloques de codigo.\n\n{\n  \"respuesta\": \"texto para WhatsApp — maximo 4 lineas\",\n  \"nuevo_estado\": \"ESTADO\",\n  \"intencion\": \"busqueda | reserva | captacion | postventa | otro\",\n  \"lead\": {\n    \"nombre\": \"\", \"operacion\": \"venta | arriendo | \", \"comuna\": \"\",\n    \"dormitorios\": \"\", \"presupuesto_uf\": 0, \"presupuesto_clp\": 0,\n    \"financiamiento\": \"preaprobado | contado | por evaluar | \",\n    \"documentacion\": \"completa | parcial | sin documentos | \"\n  },\n  \"propiedad_interes\": \"ID exacto del stock, o vacio\",\n  \"enviar_ficha\": false,\n  \"tasacion_lista\": false,\n  \"tasacion\": { \"comuna\": \"\", \"tipo\": \"casa | departamento | parcela\", \"m2\": 0, \"dormitorios\": 0 },\n  \"agendar\": false,\n  \"agendamiento\": { \"tipo\": \"visita | tasacion | llamada\", \"fecha\": \"YYYY-MM-DD\", \"hora\": \"HH:MM\", \"modalidad\": \"propiedad | oficina | videollamada\" },\n  \"accion_interna\": \"ninguna | escalar_humano | alto_valor\",\n  \"nota_interna\": \"nota solo para Alice, nunca se envia al contacto\"\n}\n`;\n\nconst msgData = $('Mensaje · Texto final').first().json;\nconst cfg     = $('⚙️ CONFIG · Cliente').first().json;\n// Lecturas NATIVAS de Google Sheets. No se usa HTTP Request: la credencial\n// Managed OAuth2 de n8n Cloud tiene prohibido ese nodo, y ese fue el bug que\n// dejo al agente sin memoria y sin stock durante toda la tarde del 6-ago.\n\n// ValoresReferencia va fijo: son 28 comunas que Alice revisa por trimestre.\n// Vale mas una llamada menos que releerlas en cada mensaje.\nconst REFERENCIAS = [\n  {\n    \"comuna\": \"Vitacura\",\n    \"tipo\": \"casa\",\n    \"uf_m2_min\": \"95\",\n    \"uf_m2_max\": \"125\",\n    \"fuente\": \"Referencia interna Prohausen\",\n    \"actualizado\": \"2026-07-01\"\n  },\n  {\n    \"comuna\": \"Vitacura\",\n    \"tipo\": \"departamento\",\n    \"uf_m2_min\": \"105\",\n    \"uf_m2_max\": \"135\",\n    \"fuente\": \"Referencia interna Prohausen\",\n    \"actualizado\": \"2026-07-01\"\n  },\n  {\n    \"comuna\": \"Las Condes\",\n    \"tipo\": \"casa\",\n    \"uf_m2_min\": \"82\",\n    \"uf_m2_max\": \"108\",\n    \"fuente\": \"Referencia interna Prohausen\",\n    \"actualizado\": \"2026-07-01\"\n  },\n  {\n    \"comuna\": \"Las Condes\",\n    \"tipo\": \"departamento\",\n    \"uf_m2_min\": \"85\",\n    \"uf_m2_max\": \"110\",\n    \"fuente\": \"Referencia interna Prohausen\",\n    \"actualizado\": \"2026-07-01\"\n  },\n  {\n    \"comuna\": \"Lo Barnechea\",\n    \"tipo\": \"casa\",\n    \"uf_m2_min\": \"75\",\n    \"uf_m2_max\": \"102\",\n    \"fuente\": \"Referencia interna Prohausen\",\n    \"actualizado\": \"2026-07-01\"\n  },\n  {\n    \"comuna\": \"Lo Barnechea\",\n    \"tipo\": \"departamento\",\n    \"uf_m2_min\": \"80\",\n    \"uf_m2_max\": \"105\",\n    \"fuente\": \"Referencia interna Prohausen\",\n    \"actualizado\": \"2026-07-01\"\n  },\n  {\n    \"comuna\": \"La Dehesa\",\n    \"tipo\": \"casa\",\n    \"uf_m2_min\": \"78\",\n    \"uf_m2_max\": \"104\",\n    \"fuente\": \"Referencia interna Prohausen\",\n    \"actualizado\": \"2026-07-01\"\n  },\n  {\n    \"comuna\": \"Providencia\",\n    \"tipo\": \"casa\",\n    \"uf_m2_min\": \"72\",\n    \"uf_m2_max\": \"95\",\n    \"fuente\": \"Referencia interna Prohausen\",\n    \"actualizado\": \"2026-07-01\"\n  },\n  {\n    \"comuna\": \"Providencia\",\n    \"tipo\": \"departamento\",\n    \"uf_m2_min\": \"78\",\n    \"uf_m2_max\": \"100\",\n    \"fuente\": \"Referencia interna Prohausen\",\n    \"actualizado\": \"2026-07-01\"\n  },\n  {\n    \"comuna\": \"Nunoa\",\n    \"tipo\": \"casa\",\n    \"uf_m2_min\": \"58\",\n    \"uf_m2_max\": \"78\",\n    \"fuente\": \"Referencia interna Prohausen\",\n    \"actualizado\": \"2026-07-01\"\n  },\n  {\n    \"comuna\": \"Nunoa\",\n    \"tipo\": \"departamento\",\n    \"uf_m2_min\": \"62\",\n    \"uf_m2_max\": \"82\",\n    \"fuente\": \"Referencia interna Prohausen\",\n    \"actualizado\": \"2026-07-01\"\n  },\n  {\n    \"comuna\": \"Santiago Centro\",\n    \"tipo\": \"departamento\",\n    \"uf_m2_min\": \"48\",\n    \"uf_m2_max\": \"66\",\n    \"fuente\": \"Referencia interna Prohausen\",\n    \"actualizado\": \"2026-07-01\"\n  },\n  {\n    \"comuna\": \"La Reina\",\n    \"tipo\": \"casa\",\n    \"uf_m2_min\": \"62\",\n    \"uf_m2_max\": \"84\",\n    \"fuente\": \"Referencia interna Prohausen\",\n    \"actualizado\": \"2026-07-01\"\n  },\n  {\n    \"comuna\": \"La Reina\",\n    \"tipo\": \"departamento\",\n    \"uf_m2_min\": \"65\",\n    \"uf_m2_max\": \"86\",\n    \"fuente\": \"Referencia interna Prohausen\",\n    \"actualizado\": \"2026-07-01\"\n  },\n  {\n    \"comuna\": \"Penalolen\",\n    \"tipo\": \"casa\",\n    \"uf_m2_min\": \"48\",\n    \"uf_m2_max\": \"66\",\n    \"fuente\": \"Referencia interna Prohausen\",\n    \"actualizado\": \"2026-07-01\"\n  },\n  {\n    \"comuna\": \"Penalolen\",\n    \"tipo\": \"departamento\",\n    \"uf_m2_min\": \"50\",\n    \"uf_m2_max\": \"68\",\n    \"fuente\": \"Referencia interna Prohausen\",\n    \"actualizado\": \"2026-07-01\"\n  },\n  {\n    \"comuna\": \"Macul\",\n    \"tipo\": \"departamento\",\n    \"uf_m2_min\": \"46\",\n    \"uf_m2_max\": \"62\",\n    \"fuente\": \"Referencia interna Prohausen\",\n    \"actualizado\": \"2026-07-01\"\n  },\n  {\n    \"comuna\": \"San Miguel\",\n    \"tipo\": \"departamento\",\n    \"uf_m2_min\": \"45\",\n    \"uf_m2_max\": \"60\",\n    \"fuente\": \"Referencia interna Prohausen\",\n    \"actualizado\": \"2026-07-01\"\n  },\n  {\n    \"comuna\": \"Puente Alto\",\n    \"tipo\": \"casa\",\n    \"uf_m2_min\": \"32\",\n    \"uf_m2_max\": \"46\",\n    \"fuente\": \"Referencia interna Prohausen\",\n    \"actualizado\": \"2026-07-01\"\n  },\n  {\n    \"comuna\": \"Puente Alto\",\n    \"tipo\": \"departamento\",\n    \"uf_m2_min\": \"34\",\n    \"uf_m2_max\": \"48\",\n    \"fuente\": \"Referencia interna Prohausen\",\n    \"actualizado\": \"2026-07-01\"\n  },\n  {\n    \"comuna\": \"Maipu\",\n    \"tipo\": \"casa\",\n    \"uf_m2_min\": \"34\",\n    \"uf_m2_max\": \"48\",\n    \"fuente\": \"Referencia interna Prohausen\",\n    \"actualizado\": \"2026-07-01\"\n  },\n  {\n    \"comuna\": \"Maipu\",\n    \"tipo\": \"departamento\",\n    \"uf_m2_min\": \"36\",\n    \"uf_m2_max\": \"50\",\n    \"fuente\": \"Referencia interna Prohausen\",\n    \"actualizado\": \"2026-07-01\"\n  },\n  {\n    \"comuna\": \"Colina\",\n    \"tipo\": \"casa\",\n    \"uf_m2_min\": \"52\",\n    \"uf_m2_max\": \"72\",\n    \"fuente\": \"Referencia interna Prohausen\",\n    \"actualizado\": \"2026-07-01\"\n  },\n  {\n    \"comuna\": \"Chicureo\",\n    \"tipo\": \"casa\",\n    \"uf_m2_min\": \"60\",\n    \"uf_m2_max\": \"82\",\n    \"fuente\": \"Referencia interna Prohausen\",\n    \"actualizado\": \"2026-07-01\"\n  },\n  {\n    \"comuna\": \"Puerto Varas\",\n    \"tipo\": \"casa\",\n    \"uf_m2_min\": \"45\",\n    \"uf_m2_max\": \"68\",\n    \"fuente\": \"Referencia interna Prohausen\",\n    \"actualizado\": \"2026-07-01\"\n  },\n  {\n    \"comuna\": \"Valparaiso\",\n    \"tipo\": \"casa\",\n    \"uf_m2_min\": \"38\",\n    \"uf_m2_max\": \"58\",\n    \"fuente\": \"Referencia interna Prohausen\",\n    \"actualizado\": \"2026-07-01\"\n  },\n  {\n    \"comuna\": \"Valparaiso\",\n    \"tipo\": \"departamento\",\n    \"uf_m2_min\": \"40\",\n    \"uf_m2_max\": \"60\",\n    \"fuente\": \"Referencia interna Prohausen\",\n    \"actualizado\": \"2026-07-01\"\n  },\n  {\n    \"comuna\": \"Vina del Mar\",\n    \"tipo\": \"departamento\",\n    \"uf_m2_min\": \"48\",\n    \"uf_m2_max\": \"72\",\n    \"fuente\": \"Referencia interna Prohausen\",\n    \"actualizado\": \"2026-07-01\"\n  }\n];\n\nfunction filas(nodo) {\n  try {\n    return $(nodo).all()\n      .map(i => i.json)\n      .filter(o => o && typeof o === 'object' && Object.keys(o).length > 0);\n  } catch (e) { return []; }\n}\n\nconst T = {\n  Propiedades:        filas('Stock · Leer propiedades'),\n  ValoresReferencia:  REFERENCIAS,\n  Reservas:           filas('Reservas · Leer del contacto'),\n  EstadoConversacion: filas('Estado · Leer conversación'),\n  MensajesProcesados: []\n};\n\n// Si el stock no llego, algo pasa con Sheets. Se avisa, pero se responde igual.\nconst lecturaOk = T.Propiedades.length > 0;\n\n// El dedup ya lo resolvio el nodo \"Dedup · wamid (local)\" antes de llegar aca:\n// si el wamid estaba visto, la cadena se cortaba y esto ni se ejecuta.\nconst duplicado = false;\n\nconst num  = (v) => {\n  // Tolera el formato chileno: \"120.000\" son ciento veinte mil, no 120.\n  if (typeof v === 'number') return isFinite(v) ? v : 0;\n  let s = String(v == null ? '' : v).trim().replace(/[^\\d.,-]/g, '');\n  if (!s) return 0;\n  const c = s.lastIndexOf(','), p = s.lastIndexOf('.');\n  if (c > -1 && p > -1) {\n    s = c > p ? s.replace(/\\./g, '').replace(',', '.') : s.replace(/,/g, '');\n  } else if (c > -1) {\n    s = (s.length - c - 1) <= 2 && (s.match(/,/g) || []).length === 1\n        ? s.replace(',', '.') : s.replace(/,/g, '');\n  } else if (p > -1) {\n    const puntos = (s.match(/\\./g) || []).length;\n    if (puntos > 1 || (s.length - p - 1) === 3) s = s.replace(/\\./g, '');\n  }\n  const n = Number(s);\n  return isFinite(n) ? n : 0;\n};\nconst norm = (v) => String(v == null ? '' : v).trim().toLowerCase();\nconst tel  = (v) => String(v == null ? '' : v).replace(/\\D/g, '');\nconst txt  = (v) => String(v == null ? '' : v).trim();\nconst yes  = (v) => ['si','sí','true','1','x','yes'].includes(norm(v));\nconst UF_HOY = 39700;\n\n// ── Estado previo de este telefono ──\n// Compara solo digitos (el locale mete puntos) y se queda con la fila MAS\n// NUEVA, por si quedaron duplicados de las pruebas anteriores.\nconst _miTel = tel(msgData.telefono);\nconst _filas = T.EstadoConversacion.filter(r => tel(r.telefono) === _miTel);\nconst stateRow = _filas.length ? _filas[_filas.length - 1] : {};\n\nconst lead = {\n  nombre: stateRow.nombre_cliente || '',\n  operacion: stateRow.operacion || '',\n  comuna: stateRow.comuna || '',\n  dormitorios: stateRow.dormitorios || '',\n  presupuesto_uf: num(stateRow.presupuesto_uf),\n  presupuesto_clp: num(stateRow.presupuesto_clp),\n  financiamiento: stateRow.financiamiento || '',\n  documentacion: stateRow.documentacion || ''\n};\nif (!lead.operacion && msgData.operacion_origen) lead.operacion = msgData.operacion_origen;\n\nlet historial = [];\ntry { historial = JSON.parse(stateRow.historial || '[]'); } catch (e) { historial = []; }\nif (historial.length > 40) historial = historial.slice(-40);\nhistorial.push({ rol: 'cliente', texto: msgData.mensaje, ts: msgData.timestamp });\n\n// ── Stock ──\nconst publicable = (p) => p && p.id && !yes(p.no_difusion) &&\n                          ['disponible','activa',''].includes(norm(p.estado));\nlet stock = T.Propiedades.filter(publicable);\n\n// Los filtros se aplican en orden de importancia y se va anotando cual dejo\n// el stock en cero. Antes, si un criterio no lo cumplia nadie, se reabria TODO\n// el catalogo en silencio: por eso a quien pidio 3 dormitorios en Las Condes le\n// ofrecieron un departamento de 2D diciendo que era una casa de 3.\nconst criteriosFallidos = [];\n\nfunction aplicar(nombre, fn, obligatorio) {\n  const antes = stock;\n  const despues = antes.filter(fn);\n  if (despues.length === 0 && antes.length > 0) {\n    criteriosFallidos.push(nombre);\n    // Un criterio obligatorio (operacion, comuna) no se relaja: si no hay, no hay.\n    if (obligatorio) { stock = []; return; }\n    return; // se deja el stock anterior, pero marcado como \"no cumple\"\n  }\n  stock = despues;\n}\n\n// ORDEN IMPORTANTE: el presupuesto va ANTES que los dormitorios.\n// Un dormitorio de menos se conversa; ocho veces el presupuesto, no. Con el\n// orden inverso, alguien que pedia 3D en Vitacura con UF 15.000 terminaba\n// viendo la casa de UF 120.000 porque era la unica con 3+ dormitorios.\nif (lead.operacion)\n  aplicar('operacion', p => norm(p.operacion) === norm(lead.operacion), true);\nif (lead.comuna)\n  aplicar('comuna', p => norm(p.comuna).includes(norm(lead.comuna)) ||\n                         norm(lead.comuna).includes(norm(p.comuna)), true);\nif (lead.presupuesto_uf)\n  aplicar('presupuesto', p => norm(p.operacion) !== 'venta' ||\n                              num(p.uf) <= lead.presupuesto_uf * 1.1, false);\nif (lead.presupuesto_clp)\n  aplicar('presupuesto', p => {\n    if (norm(p.operacion) !== 'arriendo') return true;\n    const mensual = num(p.clp) || num(p.uf) * UF_HOY;\n    return mensual <= lead.presupuesto_clp * 1.1;\n  }, false);\nif (lead.dormitorios)\n  aplicar('dormitorios', p => num(p.dormitorios) >= num(lead.dormitorios), false);\n\n// Si quedo algo pero NO cumple todo lo pedido, se ordena por cercania al pedido.\nif (criteriosFallidos.includes('dormitorios') && stock.length) {\n  const objetivo = num(lead.dormitorios);\n  stock = stock.slice().sort((a, b) =>\n    Math.abs(num(a.dormitorios) - objetivo) - Math.abs(num(b.dormitorios) - objetivo));\n}\nconst origen = msgData.propiedad_origen || '';\n\n// ── ANCLA DE LA PROPIEDAD DE ORIGEN (feedback de Alice, 11-ago) ──\n// Preguntaron por un triplex de UF 18.990 y el bot ofrecio uno de UF 1.590.\n// Si el lead entro por un link del Portal, esa propiedad manda: fija la comuna\n// y una banda de precio, y no se sale de ahi salvo que el contacto lo pida.\nconst propAncla = origen\n  ? T.Propiedades.find(p => String(p.id) === origen || String(p.id_portal || '') === origen)\n  : null;\n\n// ¿El contacto dijo explicitamente que se abre a otras comunas?\nconst textoTodo = historial.map(m => norm(m.texto)).join(' ');\nconst seAbrio = /(otra|otras|cualquier|tambien|abierto|me da igual|no importa|donde sea)\\s*(comuna|sector|lugar)?/.test(norm(msgData.mensaje))\n             || /(otra|otras)\\s+comuna/.test(textoTodo);\n\nlet comunaBloqueada = '';\nif (propAncla && !seAbrio) {\n  comunaBloqueada = txt(propAncla.comuna);\n  stock = stock.filter(p => norm(p.comuna) === norm(comunaBloqueada));\n\n  // Banda de precio alrededor de la propiedad consultada.\n  const anclaUF = num(propAncla.uf), anclaCLP = num(propAncla.clp);\n  if (anclaUF > 0) {\n    stock = stock.filter(p => {\n      const v = num(p.uf);\n      return v === 0 || (v >= anclaUF * 0.55 && v <= anclaUF * 1.8);\n    });\n  } else if (anclaCLP > 0) {\n    stock = stock.filter(p => {\n      const v = num(p.clp);\n      return v === 0 || (v >= anclaCLP * 0.55 && v <= anclaCLP * 1.8);\n    });\n  }\n  // La consultada siempre va primera y nunca se cae del filtro.\n  if (!stock.some(p => String(p.id) === String(propAncla.id))) stock.unshift(propAncla);\n}\n\n// Si no quedo nada, al menos la propiedad consultada. Antes se abria a TODO el\n// stock, y de ahi salia el depto de Santiago para un lead de Vitacura.\nif (stock.length === 0) {\n  // Ni una coincidencia. NO se reabre el catalogo: se le dice al modelo que no\n  // hay nada y que lo diga, en vez de inventar una alternativa que no calza.\n  stock = propAncla ? [propAncla] : [];\n  if (!propAncla && !criteriosFallidos.length) criteriosFallidos.push('sin_stock');\n}\n\n// La propiedad del link del Portal va primera.\nif (origen) {\n  const i = stock.findIndex(p => String(p.id) === origen || String(p.id_portal || '') === origen);\n  if (i > 0) stock.unshift(stock.splice(i, 1)[0]);\n}\n\nconst catalogo = stock.slice(0, 40).map(p => {\n  const precio = norm(p.operacion) === 'venta'\n    ? 'UF ' + num(p.uf).toLocaleString('es-CL')\n    : (num(p.uf) ? 'UF ' + num(p.uf).toLocaleString('es-CL') + '/mes'\n                 : '$' + num(p.clp).toLocaleString('es-CL') + '/mes');\n  const marcas = [];\n  if (yes(p.filtro_estricto)) marcas.push('FILTRO_ESTRICTO');\n  if (yes(p.sin_publicidad))  marcas.push('SIN_PUBLICIDAD');\n  // El link va SIEMPRE: sin el, el modelo respondia \"no tengo link online\"\n  // aunque los 26 avisos lo tienen.\n  return [p.id, p.operacion, p.tipo, p.comuna, p.direccion || '', precio,\n          (p.titulo || p.descripcion || '').slice(0, 70),\n          marcas.join('+'),\n          txt(p.link) ? 'link:' + txt(p.link) : 'link:no'].filter(Boolean).join(' | ');\n}).join('\\n');\n\n// ── Reservas de este contacto ──\nconst reservas = T.Reservas\n  .filter(r => r && r.codigo && tel(r.telefono) === tel(msgData.telefono))\n  .map(r => ({ codigo: r.codigo, propiedad: r.propiedad, tipo: r.tipo, estado: r.estado,\n               etapa: r.etapa || '', responsable: r.responsable || '',\n               fecha_hito: r.fecha_hito, detalle: r.detalle,\n               docs_pendientes: r.docs_pendientes || '' }));\n\nconst comunasTasables = [...new Set(T.ValoresReferencia.filter(r => r && r.comuna).map(r => r.comuna))];\n\n// ── Mensajes para el modelo ──\nconst mensajes = [{ role: 'system', content: SYSTEM_PROMPT }];\nfor (let i = 0; i < historial.length - 1; i++) {\n  const m = historial[i];\n  const t = String(m.texto || '').trim();\n  if (!t) continue;\n  mensajes.push({ role: m.rol === 'cliente' ? 'user' : 'assistant', content: t });\n}\nconst esPrimerMensaje = historial.filter(m => m.rol === 'cliente').length <= 1;\n\nmensajes.push({ role: 'user', content: JSON.stringify({\n  mensaje_cliente: msgData.mensaje,\n  llego_como_nota_de_voz: !!msgData.transcrito,\n  canal: msgData.canal,\n  propiedad_origen: origen,\n  tipo_propiedad_origen: msgData.tipo_propiedad || '',\n  operacion_origen: msgData.operacion_origen || '',\n  fecha_hoy: $now.toFormat('yyyy-MM-dd'),\n  hora_actual: $now.toFormat('HH:mm'),\n  dia_semana: $now.setLocale('es').toFormat('cccc'),\n  estado_conversacion: stateRow.estado_conversacion || 'INICIO',\n  lead_conocido: lead,\n  es_primer_mensaje: esPrimerMensaje,\n  reservas_del_contacto: reservas,\n  stock_disponible: catalogo || '(sin stock cargado — no menciones propiedades concretas)',\n  todas_tienen_link: stock.every(p => txt(p.link)),\n  propiedad_consultada: propAncla ? {\n    id: propAncla.id, titulo: txt(propAncla.titulo), comuna: txt(propAncla.comuna),\n    direccion: txt(propAncla.direccion), operacion: txt(propAncla.operacion),\n    precio: num(propAncla.uf) ? 'UF ' + num(propAncla.uf) : '$' + num(propAncla.clp),\n    link: txt(propAncla.link)\n  } : null,\n  comuna_bloqueada: comunaBloqueada || null,\n  criterios_que_nadie_cumple: criteriosFallidos,\n  advertencia_stock: criteriosFallidos.length\n    ? ('OJO: no hay ninguna propiedad que cumpla ' + criteriosFallidos.join(' + ') +\n       '. Las que ves abajo NO cumplen ese requisito. Dilo con honestidad antes de ' +\n       'mostrarlas: \"no tengo nada de X ahora, lo mas cercano es esto\". NUNCA ' +\n       'afirmes que una propiedad cumple algo que no cumple, ni le cambies el tipo.')\n    : '',\n  instruccion_comuna: comunaBloqueada\n    ? 'El contacto pregunto por ' + comunaBloqueada + '. SOLO puedes ofrecer propiedades de esa comuna. Si quiere otras, primero pregunta y confirma.'\n    : '',\n  // El panel del Portal no exporta m2, dormitorios ni banos. Si no se lo decimos,\n  // el modelo los inventa: en la prueba del 6-ago afirmo \"3 dormitorios\" de un\n  // depto del que no tenemos ese dato.\n  campos_sin_dato_en_el_stock: (() => {\n    const cols = ['dormitorios', 'banos', 'm2'];\n    const faltan = cols.filter(c => !T.Propiedades.some(p => num(p[c]) > 0));\n    return faltan.length\n      ? faltan.concat(['PROHIBIDO inventarlos: si te preguntan, di que se lo confirmas a Alice'])\n      : [];\n  })(),\n  comunas_con_tasacion_disponible: comunasTasables,\n  oficina: cfg.direccion_oficina,\n  correo_documentos: cfg.correo_documentos,\n  sitio_web: cfg.sitio_web\n}) });\n\n// ── ¿Esta pidiendo la ficha? Lo decide el codigo, no el modelo. ──\n// El 6-ago lo pidieron dos veces seguidas (\"tienes fotos?\", \"por donde me la\n// envias?\") y el LLM nunca puso enviar_ficha = true.\n// Alice, 13-ago: \"que no mande la ficha cada vez que me responde, solo cuando\n// la pida\". Aca se decide con tres reglas, en este orden.\nconst _msg = String(msgData.mensaje || '').trim();\n\n// 1. Lo pide con todas sus letras.\nconst PIDE_FICHA = /\\b(foto|fotos|imagen|imagenes|ficha|fichas|brochure|link|enlace|ver\\s*online|mas\\s*info|m[aá]s\\s*info|informacion|informaci[oó]n)\\b/i;\n\n// 2. O confirma una ficha que el bot acaba de ofrecer (\"De Tabancura\", \"dale\").\nconst _ultimoBot = (() => {\n  for (let i = historial.length - 1; i >= 0; i--) {\n    if (historial[i].rol === 'bot') return String(historial[i].texto || '');\n  }\n  return '';\n})();\nconst _ofrecioFicha = /\\bfichas?\\b/i.test(_ultimoBot);\nconst _confirma = /^(s[ií]|sip|dale|ya|oki?|bueno|claro|por ?fa(vor)?|perfecto|obvio|mand|env[ií]|pasa|la de|el de|de |esa|ese|ambas|las dos)/i.test(_msg);\n\n// 3. Pero NO si el mensaje va de otra cosa. \"Ok que me contacte Alice\" empieza\n//    con \"ok\" y no es un pedido de ficha.\nconst _otraIntencion = /\\b(agendar|agenda|agendemos|visita|visitar|contacte|contacto|contactar|llame|llamar|llamada|horario|horas?|cuando|disponibilidad|precio|cuanto|documentos|requisitos)\\b/i.test(_msg);\n\nconst pideFicha = !_otraIntencion &&\n                  (PIDE_FICHA.test(_msg) || (_ofrecioFicha && _confirma));\n\n// Fichas que ya se mandaron en esta conversacion: no se repiten.\n// Se marcan en el historial porque la ficha viaja como mensaje aparte.\nconst fichasEnviadas = historial\n  .filter(m => m.rol === 'bot')\n  .map(m => String(m.texto || '').match(/\\[ficha:([^\\]]+)\\]/))\n  .filter(Boolean).map(m => m[1]);\n\n// La propiedad en foco: la ultima que el bot nombro en la conversacion.\n// Sirve para cuando el cliente dice \"mandame la ficha\" sin repetir cual.\nlet ultimaPropiedad = '';\nfor (let i = historial.length - 1; i >= 0; i--) {\n  const m = historial[i];\n  if (m.rol !== 'bot') continue;\n  const t = String(m.texto || '');\n  const hit = T.Propiedades.find(p =>\n    (txt(p.id) && t.includes(txt(p.id))) ||\n    (txt(p.direccion) && t.includes(txt(p.direccion))));\n  if (hit) { ultimaPropiedad = String(hit.id); break; }\n}\nif (!ultimaPropiedad && msgData.propiedad_origen) ultimaPropiedad = msgData.propiedad_origen;\n\nreturn [{ json: {\n  duplicado, lectura_ok: lecturaOk,\n  pide_ficha: pideFicha, ultima_propiedad: ultimaPropiedad,\n  fichas_ya_enviadas: fichasEnviadas,\n  api_body: { model: cfg.openai_model, messages: mensajes, temperature: 0.4,\n              max_tokens: 1500, response_format: { type: 'json_object' } },\n  telefono: msgData.telefono,\n  historial_con_cliente: historial,\n  stock_visible: stock.slice(0, 40).map(p => String(p.id)),\n  stock_completo: T.Propiedades,\n  referencias: T.ValoresReferencia,\n  estado_previo: stateRow,\n  lead_previo: lead\n} }];"
+      },
+      "id": "40d01b8d-1092-405d-a3c3-2f00b828aa30",
+      "name": "Contexto · Preparar",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2580,
+        760
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.duplicado }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "159c218f-d4ac-4ebf-81d4-da11188ffab7",
+      "name": "¿Mensaje duplicado?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2420,
+        760
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "0b0002a6-6a0c-40e2-a02e-5d8333ccdffc",
+      "name": "Fin · Mensaje duplicado",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2640,
+        1160
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.api_body) }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "81e60e71-4867-499d-a6c2-5f853ad55bb3",
+      "name": "IA · OpenAI Chat",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2640,
+        760
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "wjH01xQGKjGOaOtb",
+          "name": "OpenAI account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// El modelo propone; el codigo decide.\n// Aca se validan agendamiento, ruteo por valor y se CALCULA la tasacion.\nconst raw     = $input.first().json;\nconst msgData = $('Mensaje · Texto final').first().json;\nconst cfg     = $('⚙️ CONFIG · Cliente').first().json;\nconst prev    = $('Contexto · Preparar').first().json.estado_previo || {};\nconst prep    = $('Contexto · Preparar').first().json;\n\nlet r = null, errorParseo = '';\ntry {\n  const t = raw.choices?.[0]?.message?.content ?? '';\n  r = JSON.parse(t.replace(/^```json\\s*/i, '').replace(/^```\\s*/i, '').replace(/\\s*```$/, '').trim());\n} catch (e) { errorParseo = e.message; }\n\nif (!r || typeof r !== 'object' || typeof r.respuesta !== 'string') {\n  r = { respuesta: 'Perdona, se me trabo el sistema un segundo. ¿Me repites eso?',\n        nuevo_estado: prev.estado_conversacion || 'INICIO', intencion: 'otro', lead: {},\n        propiedad_interes: '', enviar_ficha: false, tasacion_lista: false, tasacion: {},\n        agendar: false, agendamiento: {}, accion_interna: 'ninguna',\n        nota_interna: 'ERROR parseo respuesta IA: ' + (errorParseo || 'estructura invalida') };\n}\n\nconst num = (v) => Number(String(v ?? '').replace(/[^0-9.]/g, '')) || 0;\nconst txt = (v) => String(v ?? '').trim();\nconst norm = (v) => txt(v).toLowerCase();\n\n// ── Lead (conserva lo previo si el modelo lo dejo vacio) ──\nconst pl = prep.lead_previo || {}, L = r.lead || {};\nconst lead = {\n  nombre:          txt(L.nombre)           || pl.nombre          || '',\n  operacion:       norm(L.operacion)       || pl.operacion       || '',\n  comuna:          txt(L.comuna)           || pl.comuna          || '',\n  dormitorios:     txt(L.dormitorios)      || pl.dormitorios     || '',\n  presupuesto_uf:  num(L.presupuesto_uf)   || pl.presupuesto_uf  || 0,\n  presupuesto_clp: num(L.presupuesto_clp)  || pl.presupuesto_clp || 0,\n  financiamiento:  norm(L.financiamiento)  || pl.financiamiento  || '',\n  documentacion:   norm(L.documentacion)   || pl.documentacion   || ''\n};\n\n// ── La propiedad debe existir en el stock que le mostramos al modelo ──\nlet propiedadInteres = txt(r.propiedad_interes);\nif (propiedadInteres && !(prep.stock_visible || []).includes(propiedadInteres)) {\n  r.nota_interna = ((r.nota_interna || '') + ' | Propiedad inventada, descartada: ' + propiedadInteres).trim();\n  propiedadInteres = '';\n}\n\n// ── SCORE ──\nlet score = 0;\nif (lead.nombre) score += 10;\nif (lead.operacion) score += 10;\nif (lead.comuna) score += 10;\nif (lead.dormitorios) score += 5;\nif (lead.presupuesto_uf || lead.presupuesto_clp) score += 15;\nif (lead.financiamiento === 'contado') score += 30;\nelse if (lead.financiamiento === 'preaprobado') score += 25;\nelse if (lead.financiamiento === 'por evaluar') score += 8;\nif (lead.documentacion === 'completa') score += 20;\nelse if (lead.documentacion === 'parcial') score += 8;\nif (propiedadInteres) score += 10;\nscore = Math.min(100, score);\n\n// ── RUTEO POR VALOR ──\nconst umbralUF  = num(cfg.umbral_uf_alto)  || 12000;\nconst umbralCLP = num(cfg.umbral_clp_alto) || 2500000;\nconst prioritarias = String(cfg.comunas_prioritarias || '').split(',').map(s => s.trim().toLowerCase()).filter(Boolean);\nconst intencion = ['busqueda','reserva','captacion','postventa','otro'].includes(r.intencion) ? r.intencion : 'otro';\nconst cl = lead.comuna.toLowerCase();\nconst esPrioritaria = cl.length > 2 && prioritarias.some(c => cl.includes(c) || c.includes(cl));\n\nlet nivel = 'estandar';\nif (lead.presupuesto_uf >= umbralUF || lead.presupuesto_clp >= umbralCLP) nivel = 'alto';\nelse if (intencion === 'captacion' && esPrioritaria) nivel = 'alto';\nelse if (lead.presupuesto_uf >= 4000 || lead.presupuesto_clp >= 700000) nivel = 'medio';\n\nlet accion = ['ninguna','escalar_humano','alto_valor'].includes(r.accion_interna) ? r.accion_interna : 'ninguna';\nif (nivel === 'alto' && accion === 'ninguna') accion = 'alto_valor';\nif (intencion === 'postventa') accion = 'escalar_humano';\nconst slaMinutos = nivel === 'alto' ? 60 : (nivel === 'medio' ? 240 : 1440);\n\n// ══ TASACION EXPRESS — el rango lo calcula el codigo, nunca el modelo ══\nconst T = r.tasacion || {};\nlet tasacionLista = r.tasacion_lista === true;\nconst tCom = txt(T.comuna) || lead.comuna;\nconst tTipo = norm(T.tipo);\nconst tM2 = num(T.m2);\nlet tasacion = null;\n\nif (tasacionLista) {\n  const refs = (prep.referencias || []).filter(x => x && x.comuna);\n  const match = refs.find(x => norm(x.comuna) === norm(tCom) && norm(x.tipo) === tTipo)\n             || refs.find(x => norm(x.comuna) === norm(tCom));\n\n  if (!match || tM2 < 20 || tM2 > 2000) {\n    tasacionLista = false;\n    r.nota_interna = ((r.nota_interna || '') +\n      ' | Tasacion bloqueada: ' + (!match ? 'sin valor de referencia para ' + tCom : 'm2 fuera de rango (' + tM2 + ')')).trim();\n    r.respuesta = !match\n      ? 'Para esa comuna prefiero que el numero te lo de Alice directamente, que es tasadora. ¿Te acomoda que se junten esta semana?'\n      : 'Necesito confirmar los metros cuadrados construidos para calcularlo bien. ¿Cuantos son?';\n    r.nuevo_estado = 'CAPTACION';\n  } else {\n    const ufMin = num(match.uf_m2_min), ufMax = num(match.uf_m2_max);\n    const ufProm = (ufMin + ufMax) / 2;\n    const red = (x) => Math.round(x / 50) * 50;\n    const rapido = red(tM2 * ufProm * 0.93);   // vender en 3 meses\n    const paciente = red(tM2 * ufProm * 1.08); // esperar hasta un ano\n\n    tasacion = { comuna: tCom, tipo: tTipo || 'propiedad', m2: tM2,\n                 uf_m2_min: ufMin, uf_m2_max: ufMax,\n                 rango_rapido: rapido, rango_paciente: paciente,\n                 fuente: match.fuente || 'referencia interna',\n                 actualizado: match.actualizado || '' };\n\n    const fmt = (n) => n.toLocaleString('es-CL');\n    const etq = tTipo === 'casa' ? 'Casa' : (tTipo === 'parcela' ? 'Parcela' : 'Departamento');\n\n    // El rango se calcula, pero NO se le entrega al cliente.\n    // Alice, 11-ago: \"podria estar no considerando factores importantes del\n    // precio, que bajen la emocion de un cliente al querer vender su propiedad\n    // conmigo... dejaria la evaluacion de precio hasta que me contacte con el\".\n    // El numero viaja solo al correo interno para que ella llegue preparada.\n    const yaConfirmado = (prep.historial_con_cliente || [])\n      .some(m => m.rol === 'bot' && /evalua el precio y te env/i.test(String(m.texto || '')));\n    if (!yaConfirmado) {\n      r.respuesta =\n        'Perfecto, con esto Alice ya puede trabajar.\\n\\n' +\n        'Ella evalua el precio y te envia el analisis por correo. Es tasadora ' +\n        'certificada, asi que pondera terminaciones, orientacion, piso y gastos ' +\n        'comunes, no solo los metros.\\n\\n' +\n        '¿Te acomoda que se junten esta semana? Puede ser en la propiedad, en su ' +\n        'oficina o por videollamada.';\n    }\n    r.nuevo_estado = 'TASACION';\n  }\n}\n\n// ── VALIDACION DEL AGENDAMIENTO ──\nconst AG = r.agendamiento || {};\nlet agendar = r.agendar === true;\nlet tipoAg = ['visita','tasacion','llamada'].includes(txt(AG.tipo)) ? txt(AG.tipo) : 'visita';\nlet fecha = txt(AG.fecha), hora = txt(AG.hora);\nlet modalidad = ['propiedad','oficina','videollamada'].includes(txt(AG.modalidad)) ? txt(AG.modalidad) : 'propiedad';\nlet motivo = '';\n\nif (agendar && !tasacionLista) {\n  const reF = /^\\d{4}-\\d{2}-\\d{2}$/, reH = /^([01]?\\d|2[0-3]):[0-5]\\d$/;\n  if (!lead.nombre) motivo = 'me falta tu nombre';\n  else if (!reF.test(fecha)) motivo = 'me falta el dia';\n  else if (!reH.test(hora))  motivo = 'me falta la hora';\n  else {\n    const [hh, mm] = hora.split(':').map(Number);\n    const minutos = hh * 60 + mm;\n    const ahora = $now.hour * 60 + $now.minute;\n    const hoy = $now.toFormat('yyyy-MM-dd');\n    const dow = new Date(fecha + 'T12:00:00Z').getUTCDay();\n    if (fecha < hoy) motivo = 'esa fecha ya paso';\n    else if (fecha === hoy && minutos <= ahora + 60) motivo = 'necesito al menos una hora de anticipacion';\n    else if (dow === 0) motivo = 'los domingos Alice no hace visitas';\n    else if (minutos < 540 || minutos > 1200) motivo = 'las visitas son entre 09:00 y 20:00';\n    else if (tipoAg === 'visita' && lead.operacion === 'arriendo' &&\n             !['completa','parcial'].includes(lead.documentacion))\n      motivo = 'para coordinar la visita necesito primero tus liquidaciones, cotizaciones AFP y DICOM';\n    else if (tipoAg === 'visita' && !propiedadInteres) motivo = 'me falta confirmar cual propiedad quieres ver';\n  }\n  if (motivo) {\n    agendar = false;\n    r.respuesta = 'Casi listo. Solo un detalle: ' + motivo + '. ¿Me lo confirmas?';\n    r.nuevo_estado = motivo.indexOf('DICOM') >= 0 ? 'DOCUMENTOS' : 'AGENDANDO';\n    if (/fecha|dia|hora|domingo|09:00|anticipacion/.test(motivo)) { fecha = ''; hora = ''; }\n    r.nota_interna = ((r.nota_interna || '') + ' | Agendamiento bloqueado: ' + motivo).trim();\n  }\n} else if (agendar && tasacionLista) {\n  agendar = false; // la tasacion ya ocupa este turno; el agendamiento va en el siguiente\n}\n\n// ── Ficha: SIEMPRE se manda algo. Con foto va como imagen, sin foto como\n// texto con el link del Portal (donde si hay fotos). Antes, si la propiedad\n// no tenia foto, el bot prometia la ficha y no llegaba nada.\n// El modelo propone, el codigo decide — y aca decide que NO.\n// El LLM dejaba enviar_ficha = true para siempre, asi que la ficha se pegaba a\n// cada respuesta. Ahora manda la deteccion del codigo, no su booleano.\nif (!propiedadInteres && prep.pide_ficha && prep.ultima_propiedad) {\n  propiedadInteres = String(prep.ultima_propiedad);\n}\nconst yaSeMando = (prep.fichas_ya_enviadas || []).includes(String(propiedadInteres));\nlet enviarFicha = prep.pide_ficha === true && !!propiedadInteres &&\n                  !tasacionLista && !yaSeMando;\nif (r.enviar_ficha === true && !prep.pide_ficha) {\n  r.nota_interna = ((r.nota_interna || '') +\n    ' | El modelo quiso mandar ficha sin que la pidieran, bloqueada').trim();\n}\nif (yaSeMando) {\n  r.nota_interna = ((r.nota_interna || '') +\n    ' | Ficha de ' + propiedadInteres + ' ya enviada antes, no se repite').trim();\n}\nlet fichaConFoto = false;\nlet ficha = null;\n\nif (enviarFicha) {\n  const p = (prep.stock_completo || []).find(x => String(x.id) === propiedadInteres);\n  if (!p) {\n    enviarFicha = false;               // el modelo se invento el ID\n  } else {\n    const foto = txt(p.foto);\n    const precio = norm(p.operacion) === 'venta'\n      ? 'UF ' + num(p.uf).toLocaleString('es-CL')\n      : (num(p.clp) ? '$' + num(p.clp).toLocaleString('es-CL') + ' / mes'\n                    : 'UF ' + num(p.uf).toLocaleString('es-CL') + ' / mes');\n\n    // Solo se imprime lo que existe. Nada de \"0D / 0B · 0 m2\".\n    const specs = [];\n    if (num(p.dormitorios)) specs.push(num(p.dormitorios) + 'D');\n    if (num(p.banos))       specs.push(num(p.banos) + 'B');\n    if (num(p.m2))          specs.push(num(p.m2) + ' m²');\n\n    const lineas = [\n      '*' + txt(p.titulo || p.descripcion || p.id) + '*',\n      precio,\n      [txt(p.tipo), txt(p.comuna), specs.join(' / ')].filter(Boolean).join(' · '),\n      txt(p.direccion) ? '📍 ' + txt(p.direccion) : '',\n      txt(p.link) ? '\\n' + txt(p.link) : ''\n    ].filter(Boolean);\n\n    const cuerpo = lineas.join('\\n');\n    fichaConFoto = /^https?:\\/\\//i.test(foto);\n    ficha = {\n      foto: fichaConFoto ? foto : '',\n      caption: cuerpo,\n      texto: cuerpo + (fichaConFoto ? '' : '\\n\\nEn el link estan todas las fotos.')\n    };\n  }\n}\n\n// ── ANTI-REPETICION (Alice, 11-ago: \"me envio 3 veces el mismo rango, sin\n// pedirlo\" / \"siento repite mucho el mensaje final, al menos 3 veces\") ──\n// Si lo que vamos a mandar es casi igual a algo que el bot ya dijo, se cambia\n// por un seguimiento corto en vez de repetir el bloque entero.\n(function evitarRepetir() {\n  const previos = (prep.historial_con_cliente || [])\n    .filter(m => m.rol === 'bot').slice(-4).map(m => String(m.texto || ''));\n  if (!previos.length) return;\n\n  const huella = (s) => String(s || '').toLowerCase()\n    .replace(/[^a-z0-9áéíóúñ ]/gi, ' ').replace(/\\s+/g, ' ').trim();\n  const salida = huella(r.respuesta);\n  if (salida.length < 40) return;\n\n  const parecido = (a, b) => {\n    const A = new Set(a.split(' ')), B = new Set(b.split(' '));\n    if (!A.size || !B.size) return 0;\n    let comunes = 0;\n    A.forEach(w => { if (B.has(w)) comunes++; });\n    return comunes / Math.max(A.size, B.size);\n  };\n\n  const repetido = previos.some(p => parecido(salida, huella(p)) > 0.78);\n  if (!repetido) return;\n\n  r.nota_interna = ((r.nota_interna || '') + ' | Respuesta repetida, reemplazada').trim();\n  r.respuesta = lead.nombre\n    ? 'Quedo atenta entonces, ' + lead.nombre + '. Cualquier duda me dices.'\n    : 'Quedo atenta. Cualquier duda me dices.';\n  enviarFicha = false;\n})();\n\n// ── Historial ──\nconst historial = prep.historial_con_cliente || [];\nhistorial.push({ rol: 'bot', texto: r.respuesta, ts: new Date().toISOString() });\n// Deja constancia de la ficha enviada: es lo que impide repetirla.\nif (enviarFicha && propiedadInteres) {\n  historial.push({ rol: 'bot', texto: '[ficha:' + propiedadInteres + ']',\n                   ts: new Date().toISOString() });\n}\n\nconst estados = ['INICIO','CALIFICANDO','MOSTRANDO_STOCK','DOCUMENTOS','AGENDANDO','AGENDADO',\n                 'CONSULTA_RESERVA','CAPTACION','TASACION','SEGUIMIENTO','ESCALADO'];\nconst nuevoEstado = estados.includes(r.nuevo_estado) ? r.nuevo_estado\n                    : (agendar ? 'AGENDADO' : (prev.estado_conversacion || 'CALIFICANDO'));\n\nreturn [{ json: {\n  respuesta: r.respuesta, nuevo_estado: nuevoEstado, intencion, lead, score, nivel,\n  sla_minutos: slaMinutos, propiedad_interes: propiedadInteres,\n  enviar_ficha: enviarFicha, ficha_con_foto: fichaConFoto, ficha,\n  tasacion_lista: tasacionLista, tasacion,\n  agendar, agendamiento: { tipo: tipoAg, fecha, hora, modalidad },\n  accion_interna: accion, nota_interna: r.nota_interna || '',\n  telefono: msgData.telefono, wamid: msgData.wamid, canal: msgData.canal,\n  transcrito: !!msgData.transcrito, mensaje_cliente: msgData.mensaje,\n  historial_para_sheets: JSON.stringify(historial.length > 40 ? historial.slice(-40) : historial)\n} }];"
+      },
+      "id": "b8ff4db7-3ead-4551-bba1-5f5de8dde32e",
+      "name": "IA · Parsear y validar",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2860,
+        680
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/{{ $('⚙️ CONFIG · Cliente').first().json.graph_api_version }}/{{ $('⚙️ CONFIG · Cliente').first().json.whatsapp_phone_number_id }}/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ messaging_product: 'whatsapp', to: $json.telefono, type: 'text', text: { preview_url: false, body: $json.respuesta } }) }}",
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "id": "91149a56-3c78-45e6-9524-851d0b05db9c",
+      "name": "⚡ WA · Responder",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3080,
+        680
+      ],
+      "credentials": {
+        "whatsAppApi": {
+          "id": "kmVgOQdR7nVKAxtJ",
+          "name": "WhatsApp account 2"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $('IA · Parsear y validar').first().json.enviar_ficha }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "ddacada5-0e98-478d-96e0-9792e5e35132",
+      "name": "¿Mandar ficha?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        3300,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/{{ $('⚙️ CONFIG · Cliente').first().json.graph_api_version }}/{{ $('⚙️ CONFIG · Cliente').first().json.whatsapp_phone_number_id }}/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ messaging_product: 'whatsapp', to: $('IA · Parsear y validar').first().json.telefono, type: 'image', image: { link: $('IA · Parsear y validar').first().json.ficha.foto, caption: $('IA · Parsear y validar').first().json.ficha.caption } }) }}",
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "id": "ed22c4f4-7e82-4e9e-b14a-a150af688f44",
+      "name": "WA · Enviar ficha [imagen]",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3520,
+        380
+      ],
+      "credentials": {
+        "whatsAppApi": {
+          "id": "kmVgOQdR7nVKAxtJ",
+          "name": "WhatsApp account 2"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {},
+      "id": "eb79a435-fa36-4af5-9cef-1bdc0306f4e1",
+      "name": "Fin · Sin ficha",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        3520,
+        540
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('⚙️ CONFIG · Cliente').first().json.sheet_id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "MensajesProcesados",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "wamid": "={{ $('Mensaje · Texto final').first().json.wamid }}",
+            "telefono": "={{ $('Mensaje · Texto final').first().json.telefono }}",
+            "canal": "={{ $('Mensaje · Texto final').first().json.canal }}",
+            "tipo": "={{ $('Mensaje · Texto final').first().json.tipo }}",
+            "fecha": "={{ $now.toISO() }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "wamid",
+              "displayName": "wamid",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "telefono",
+              "displayName": "telefono",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "canal",
+              "displayName": "canal",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "tipo",
+              "displayName": "tipo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "9c96bc9b-f6cc-4e64-adca-88c2556bbba8",
+      "name": "Guardar · wamid",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        3300,
+        700
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ZPcI2oeMuojLvUyW",
+          "name": "Google Sheets OAuth2 API"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('⚙️ CONFIG · Cliente').first().json.sheet_id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "EstadoConversacion",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "telefono": "={{ $('IA · Parsear y validar').first().json.telefono }}",
+            "estado_conversacion": "={{ $('IA · Parsear y validar').first().json.nuevo_estado }}",
+            "historial": "={{ $('IA · Parsear y validar').first().json.historial_para_sheets }}",
+            "nombre_cliente": "={{ $('IA · Parsear y validar').first().json.lead.nombre }}",
+            "operacion": "={{ $('IA · Parsear y validar').first().json.lead.operacion }}",
+            "comuna": "={{ $('IA · Parsear y validar').first().json.lead.comuna }}",
+            "dormitorios": "={{ $('IA · Parsear y validar').first().json.lead.dormitorios }}",
+            "presupuesto_uf": "={{ $('IA · Parsear y validar').first().json.lead.presupuesto_uf }}",
+            "presupuesto_clp": "={{ $('IA · Parsear y validar').first().json.lead.presupuesto_clp }}",
+            "financiamiento": "={{ $('IA · Parsear y validar').first().json.lead.financiamiento }}",
+            "documentacion": "={{ $('IA · Parsear y validar').first().json.lead.documentacion }}",
+            "ultima_actualizacion": "={{ $now.toISO() }}"
+          },
+          "matchingColumns": [
+            "telefono"
+          ],
+          "schema": [
+            {
+              "id": "telefono",
+              "displayName": "telefono",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "estado_conversacion",
+              "displayName": "estado_conversacion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "historial",
+              "displayName": "historial",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nombre_cliente",
+              "displayName": "nombre_cliente",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "operacion",
+              "displayName": "operacion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "comuna",
+              "displayName": "comuna",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "dormitorios",
+              "displayName": "dormitorios",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "presupuesto_uf",
+              "displayName": "presupuesto_uf",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "presupuesto_clp",
+              "displayName": "presupuesto_clp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "financiamiento",
+              "displayName": "financiamiento",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "documentacion",
+              "displayName": "documentacion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ultima_actualizacion",
+              "displayName": "ultima_actualizacion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "5c610431-9dea-4196-8ca3-627c1291511c",
+      "name": "Guardar · conversación",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        3520,
+        700
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ZPcI2oeMuojLvUyW",
+          "name": "Google Sheets OAuth2 API"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('⚙️ CONFIG · Cliente').first().json.sheet_id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Leads",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "telefono": "={{ $('IA · Parsear y validar').first().json.telefono }}",
+            "nombre": "={{ $('IA · Parsear y validar').first().json.lead.nombre }}",
+            "canal": "={{ $('IA · Parsear y validar').first().json.canal }}",
+            "intencion": "={{ $('IA · Parsear y validar').first().json.intencion }}",
+            "operacion": "={{ $('IA · Parsear y validar').first().json.lead.operacion }}",
+            "comuna": "={{ $('IA · Parsear y validar').first().json.lead.comuna }}",
+            "presupuesto_uf": "={{ $('IA · Parsear y validar').first().json.lead.presupuesto_uf }}",
+            "presupuesto_clp": "={{ $('IA · Parsear y validar').first().json.lead.presupuesto_clp }}",
+            "financiamiento": "={{ $('IA · Parsear y validar').first().json.lead.financiamiento }}",
+            "documentacion": "={{ $('IA · Parsear y validar').first().json.lead.documentacion }}",
+            "propiedad_interes": "={{ $('IA · Parsear y validar').first().json.propiedad_interes }}",
+            "score": "={{ $('IA · Parsear y validar').first().json.score }}",
+            "nivel": "={{ $('IA · Parsear y validar').first().json.nivel }}",
+            "sla_minutos": "={{ $('IA · Parsear y validar').first().json.sla_minutos }}",
+            "estado": "={{ $('IA · Parsear y validar').first().json.nuevo_estado }}",
+            "ultima_actualizacion": "={{ $now.toISO() }}"
+          },
+          "matchingColumns": [
+            "telefono"
+          ],
+          "schema": [
+            {
+              "id": "telefono",
+              "displayName": "telefono",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "canal",
+              "displayName": "canal",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "intencion",
+              "displayName": "intencion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "operacion",
+              "displayName": "operacion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "comuna",
+              "displayName": "comuna",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "presupuesto_uf",
+              "displayName": "presupuesto_uf",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "presupuesto_clp",
+              "displayName": "presupuesto_clp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "financiamiento",
+              "displayName": "financiamiento",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "documentacion",
+              "displayName": "documentacion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "propiedad_interes",
+              "displayName": "propiedad_interes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "score",
+              "displayName": "score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nivel",
+              "displayName": "nivel",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "sla_minutos",
+              "displayName": "sla_minutos",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "estado",
+              "displayName": "estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ultima_actualizacion",
+              "displayName": "ultima_actualizacion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4c144bbf-8f4e-4ee4-b5e2-182d6116c66e",
+      "name": "Guardar · lead",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        3740,
+        700
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ZPcI2oeMuojLvUyW",
+          "name": "Google Sheets OAuth2 API"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('IA · Parsear y validar').first().json.agendar }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and",
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                }
+              },
+              "renameOutput": true,
+              "outputKey": "agendamiento"
+            },
+            {
+              "conditions": {
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('IA · Parsear y validar').first().json.tasacion_lista }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and",
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                }
+              },
+              "renameOutput": true,
+              "outputKey": "tasacion"
+            },
+            {
+              "conditions": {
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('IA · Parsear y validar').first().json.accion_interna }}",
+                    "rightValue": "alto_valor",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and",
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                }
+              },
+              "renameOutput": true,
+              "outputKey": "alto_valor"
+            },
+            {
+              "conditions": {
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('IA · Parsear y validar').first().json.accion_interna }}",
+                    "rightValue": "escalar_humano",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and",
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                }
+              },
+              "renameOutput": true,
+              "outputKey": "escalar_humano"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "id": "48830afd-3055-4c00-a7a6-663328e5ce15",
+      "name": "Switch · Acción",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        3960,
+        700
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Codigo de agendamiento y fechas ISO con offset real de Chile.\nconst r = $('IA · Parsear y validar').first().json;\nconst cfg = $('⚙️ CONFIG · Cliente').first().json;\nconst fecha = r.agendamiento.fecha, hora = r.agendamiento.hora.padStart(5, '0');\n\nfunction offsetSantiago(d) {\n  const parts = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Santiago', timeZoneName: 'longOffset' }).formatToParts(d);\n  const tz = (parts.find(p => p.type === 'timeZoneName') || {}).value || '';\n  const m = tz.match(/GMT([+-]\\d{2}:\\d{2})/);\n  return m ? m[1] : '-04:00';\n}\nconst off = offsetSantiago(new Date(fecha + 'T12:00:00Z'));\nconst [hh, mm] = hora.split(':').map(Number);\nconst dur = r.agendamiento.tipo === 'llamada' ? 30 : 60;\nconst fin = hh * 60 + mm + dur;\nconst endHora = String(Math.min(Math.floor(fin / 60), 23)).padStart(2, '0') + ':' + String(fin % 60).padStart(2, '0');\n\nconst sufijo = (r.wamid || '').replace(/[^A-Za-z0-9]/g, '').slice(-6).toUpperCase() || String(Date.now()).slice(-6);\nconst prefijo = r.agendamiento.tipo === 'tasacion' ? 'TAS' : (r.agendamiento.tipo === 'llamada' ? 'CAL' : 'VIS');\n\nconst stock = $('Contexto · Preparar').first().json.stock_completo || [];\nconst prop = stock.find(p => String(p.id) === r.propiedad_interes) || {};\nconst propTxt = r.propiedad_interes\n  ? (r.propiedad_interes + ' · ' + (prop.tipo || '') + ' ' + (prop.comuna || '')).trim()\n  : 'Por definir';\nconst lugar = r.agendamiento.modalidad === 'oficina' ? cfg.direccion_oficina\n            : r.agendamiento.modalidad === 'videollamada' ? 'Videollamada'\n            : (prop.direccion || propTxt);\n\nreturn [{ json: { ...r,\n  codigo_agenda: prefijo + '-' + fecha.replace(/-/g, '') + '-' + sufijo,\n  start_iso: fecha + 'T' + hora + ':00' + off,\n  end_iso:   fecha + 'T' + endHora + ':00' + off,\n  propiedad_txt: propTxt, lugar,\n  etiqueta_tipo: { visita: 'Visita', tasacion: 'Tasacion', llamada: 'Llamada' }[r.agendamiento.tipo] || 'Visita',\n  icono_nivel: r.nivel === 'alto' ? '🔴' : (r.nivel === 'medio' ? '🟡' : '🟢')\n} }];"
+      },
+      "id": "fa0b9f85-f111-4a7f-9070-81ac41534954",
+      "name": "Agenda · Código y evento",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4180,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('⚙️ CONFIG · Cliente').first().json.sheet_id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Agendamientos",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "codigo": "={{ $('Agenda · Código y evento').first().json.codigo_agenda }}",
+            "timestamp": "={{ $now.toISO() }}",
+            "telefono": "={{ $('Agenda · Código y evento').first().json.telefono }}",
+            "nombre": "={{ $('Agenda · Código y evento').first().json.lead.nombre }}",
+            "tipo": "={{ $('Agenda · Código y evento').first().json.agendamiento.tipo }}",
+            "propiedad_id": "={{ $('Agenda · Código y evento').first().json.propiedad_interes }}",
+            "propiedad": "={{ $('Agenda · Código y evento').first().json.propiedad_txt }}",
+            "fecha": "={{ $('Agenda · Código y evento').first().json.agendamiento.fecha }}",
+            "hora": "={{ $('Agenda · Código y evento').first().json.agendamiento.hora }}",
+            "modalidad": "={{ $('Agenda · Código y evento').first().json.agendamiento.modalidad }}",
+            "nivel": "={{ $('Agenda · Código y evento').first().json.nivel }}",
+            "score": "={{ $('Agenda · Código y evento').first().json.score }}",
+            "estado": "Agendada",
+            "nota_interna": "={{ $('Agenda · Código y evento').first().json.nota_interna || '' }}",
+            "calendar_event_id": ""
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "codigo",
+              "displayName": "codigo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "telefono",
+              "displayName": "telefono",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "tipo",
+              "displayName": "tipo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "propiedad_id",
+              "displayName": "propiedad_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "propiedad",
+              "displayName": "propiedad",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "hora",
+              "displayName": "hora",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "modalidad",
+              "displayName": "modalidad",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nivel",
+              "displayName": "nivel",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "score",
+              "displayName": "score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "estado",
+              "displayName": "estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nota_interna",
+              "displayName": "nota_interna",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "calendar_event_id",
+              "displayName": "calendar_event_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "9c0274bc-727b-4118-87ec-7babd30045dc",
+      "name": "Agenda · Registrar",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        4400,
+        240
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ZPcI2oeMuojLvUyW",
+          "name": "Google Sheets OAuth2 API"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "={{ $('⚙️ CONFIG · Cliente').first().json.calendar_id }}",
+          "mode": "id"
+        },
+        "start": "={{ $('Agenda · Código y evento').first().json.start_iso }}",
+        "end": "={{ $('Agenda · Código y evento').first().json.end_iso }}",
+        "additionalFields": {
+          "summary": "={{ $('Agenda · Código y evento').first().json.icono_nivel + ' ' + $('Agenda · Código y evento').first().json.etiqueta_tipo + ' — ' + ($('Agenda · Código y evento').first().json.lead.nombre || 'Contacto') + ' — ' + $('Agenda · Código y evento').first().json.propiedad_txt }}",
+          "location": "={{ $('Agenda · Código y evento').first().json.lugar }}",
+          "description": "={{ 'Agendado por WhatsApp | Codigo: ' + $('Agenda · Código y evento').first().json.codigo_agenda + ' | Contacto: ' + ($('Agenda · Código y evento').first().json.lead.nombre || '') + ' | Telefono: +' + $('Agenda · Código y evento').first().json.telefono + ' | Canal: ' + $('Agenda · Código y evento').first().json.canal + ' | Propiedad: ' + $('Agenda · Código y evento').first().json.propiedad_txt + ' | Operacion: ' + ($('Agenda · Código y evento').first().json.lead.operacion || '-') + ' | Financiamiento: ' + ($('Agenda · Código y evento').first().json.lead.financiamiento || '-') + ' | Documentacion: ' + ($('Agenda · Código y evento').first().json.lead.documentacion || '-') + ' | Score: ' + $('Agenda · Código y evento').first().json.score + '/100 (' + $('Agenda · Código y evento').first().json.nivel + ')' + ($('Agenda · Código y evento').first().json.nota_interna ? ' | NOTA: ' + $('Agenda · Código y evento').first().json.nota_interna : '') }}"
+        }
+      },
+      "id": "1a48aba9-dc23-4982-9096-8fbe720c7416",
+      "name": "Agenda · Evento [Calendar]",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        4620,
+        240
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "ZlUKLjsLKqsUeTAn",
+          "name": "Google Calendar OAuth2 API"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('⚙️ CONFIG · Cliente').first().json.email_alice }}",
+        "subject": "={{ $('Agenda · Código y evento').first().json.icono_nivel + ' ' + $('Agenda · Código y evento').first().json.etiqueta_tipo + ' ' + $('Agenda · Código y evento').first().json.codigo_agenda + ' — ' + ($('Agenda · Código y evento').first().json.lead.nombre || 'Contacto') + ' — ' + $('Agenda · Código y evento').first().json.agendamiento.fecha + ' ' + $('Agenda · Código y evento').first().json.agendamiento.hora }}",
+        "message": "={{ '<h2 style=\"color:#8a6f14\">' + $('Agenda · Código y evento').first().json.etiqueta_tipo + ' agendada</h2><p><b>Codigo:</b> ' + $('Agenda · Código y evento').first().json.codigo_agenda + '<br><b>Contacto:</b> ' + ($('Agenda · Código y evento').first().json.lead.nombre || 'No especificado') + '<br><b>WhatsApp:</b> +' + $('Agenda · Código y evento').first().json.telefono + '<br><b>Canal:</b> ' + $('Agenda · Código y evento').first().json.canal + '<br><b>Cuando:</b> ' + $('Agenda · Código y evento').first().json.agendamiento.fecha + ' a las ' + $('Agenda · Código y evento').first().json.agendamiento.hora + '<br><b>Donde:</b> ' + $('Agenda · Código y evento').first().json.lugar + '</p><h3>Ficha del lead</h3><ul><li><b>Propiedad:</b> ' + $('Agenda · Código y evento').first().json.propiedad_txt + '</li><li><b>Operacion:</b> ' + ($('Agenda · Código y evento').first().json.lead.operacion || '-') + '</li><li><b>Comuna:</b> ' + ($('Agenda · Código y evento').first().json.lead.comuna || '-') + '</li><li><b>Financiamiento:</b> ' + ($('Agenda · Código y evento').first().json.lead.financiamiento || '-') + '</li><li><b>Documentacion:</b> ' + ($('Agenda · Código y evento').first().json.lead.documentacion || '-') + '</li><li><b>Score:</b> ' + $('Agenda · Código y evento').first().json.score + '/100 — nivel ' + $('Agenda · Código y evento').first().json.nivel + '</li></ul>' + (($('Agenda · Código y evento').first().json.nota_interna || '') ? '<p><b>⚠️ Nota:</b> ' + $('Agenda · Código y evento').first().json.nota_interna + '</p>' : '') + '<hr><p style=\"color:#888;font-size:12px\">Agente WhatsApp Prohausen — LUMENHASH</p>' }}",
+        "options": {}
+      },
+      "id": "9b53f19d-b185-424a-8534-8d4bb43b6b4e",
+      "name": "Agenda · Correo Alice",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        4840,
+        240
+      ],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "S54s9Lit3RPRfCqG",
+          "name": "Gmail OAuth2 API"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('⚙️ CONFIG · Cliente').first().json.sheet_id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Tasaciones",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "timestamp": "={{ $now.toISO() }}",
+            "telefono": "={{ $('IA · Parsear y validar').first().json.telefono }}",
+            "nombre": "={{ $('IA · Parsear y validar').first().json.lead.nombre }}",
+            "comuna": "={{ $('IA · Parsear y validar').first().json.tasacion.comuna }}",
+            "tipo": "={{ $('IA · Parsear y validar').first().json.tasacion.tipo }}",
+            "m2": "={{ $('IA · Parsear y validar').first().json.tasacion.m2 }}",
+            "uf_m2_min": "={{ $('IA · Parsear y validar').first().json.tasacion.uf_m2_min }}",
+            "uf_m2_max": "={{ $('IA · Parsear y validar').first().json.tasacion.uf_m2_max }}",
+            "rango_rapido_uf": "={{ $('IA · Parsear y validar').first().json.tasacion.rango_rapido }}",
+            "rango_paciente_uf": "={{ $('IA · Parsear y validar').first().json.tasacion.rango_paciente }}",
+            "canal": "={{ $('IA · Parsear y validar').first().json.canal }}",
+            "estado": "Enviada"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "telefono",
+              "displayName": "telefono",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "comuna",
+              "displayName": "comuna",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "tipo",
+              "displayName": "tipo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "m2",
+              "displayName": "m2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "uf_m2_min",
+              "displayName": "uf_m2_min",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "uf_m2_max",
+              "displayName": "uf_m2_max",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "rango_rapido_uf",
+              "displayName": "rango_rapido_uf",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "rango_paciente_uf",
+              "displayName": "rango_paciente_uf",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "canal",
+              "displayName": "canal",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "estado",
+              "displayName": "estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b05e2419-e953-4089-98c0-2504db1b5261",
+      "name": "Tasación · Registrar",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        4180,
+        480
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ZPcI2oeMuojLvUyW",
+          "name": "Google Sheets OAuth2 API"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('⚙️ CONFIG · Cliente').first().json.email_alice }}",
+        "subject": "={{ '🏷️ TASACIÓN EXPRESS enviada — ' + ($('IA · Parsear y validar').first().json.lead.nombre || 'Propietario') + ' — ' + $('IA · Parsear y validar').first().json.tasacion.comuna }}",
+        "message": "={{ '<h2 style=\"color:#8a6f14\">Tasación express entregada por WhatsApp</h2><p style=\"font-size:15px\"><b>Este es un propietario, no un comprador. Es inventario.</b></p><p><b>Contacto:</b> ' + ($('IA · Parsear y validar').first().json.lead.nombre || 'No entregado aun') + '<br><b>WhatsApp:</b> +' + $('IA · Parsear y validar').first().json.telefono + '</p><h3>Lo que se le envió</h3><ul><li><b>Propiedad:</b> ' + $('IA · Parsear y validar').first().json.tasacion.tipo + ' de ' + $('IA · Parsear y validar').first().json.tasacion.m2 + ' m² en ' + $('IA · Parsear y validar').first().json.tasacion.comuna + '</li><li><b>Vender en 3 meses:</b> UF ' + $('IA · Parsear y validar').first().json.tasacion.rango_rapido + '</li><li><b>Esperando hasta un año:</b> UF ' + $('IA · Parsear y validar').first().json.tasacion.rango_paciente + '</li><li><b>Referencia:</b> UF/m² ' + $('IA · Parsear y validar').first().json.tasacion.uf_m2_min + ' – ' + $('IA · Parsear y validar').first().json.tasacion.uf_m2_max + '</li></ul><p>Se le ofreció reunión contigo esta semana. <b>Confirma tú el número fino.</b></p>' }}",
+        "options": {}
+      },
+      "id": "76f64808-4f92-4373-a5ee-4a688ac1ef55",
+      "name": "Tasación · Correo Alice",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        4400,
+        480
+      ],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "S54s9Lit3RPRfCqG",
+          "name": "Gmail OAuth2 API"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('⚙️ CONFIG · Cliente').first().json.email_alice }}",
+        "subject": "={{ '🔴 LEAD DE ALTO VALOR — llamar en ' + $('IA · Parsear y validar').first().json.sla_minutos + ' min — ' + ($('IA · Parsear y validar').first().json.lead.nombre || 'Contacto sin nombre') }}",
+        "message": "={{ '<h2 style=\"color:#c0392b\">🔴 Lead de alto valor</h2><p style=\"font-size:15px\"><b>SLA: llamar dentro de ' + $('IA · Parsear y validar').first().json.sla_minutos + ' minutos.</b></p><p><b>Contacto:</b> ' + ($('IA · Parsear y validar').first().json.lead.nombre || 'No entregado aun') + '<br><b>WhatsApp:</b> +' + $('IA · Parsear y validar').first().json.telefono + '<br><b>Canal:</b> ' + $('IA · Parsear y validar').first().json.canal + '<br><b>Intencion:</b> ' + $('IA · Parsear y validar').first().json.intencion + '</p><ul><li><b>Comuna:</b> ' + ($('IA · Parsear y validar').first().json.lead.comuna || '-') + '</li><li><b>Presupuesto:</b> ' + ($('IA · Parsear y validar').first().json.lead.presupuesto_uf ? 'UF ' + $('IA · Parsear y validar').first().json.lead.presupuesto_uf : ($('IA · Parsear y validar').first().json.lead.presupuesto_clp ? '$' + $('IA · Parsear y validar').first().json.lead.presupuesto_clp : 'no declarado')) + '</li><li><b>Propiedad:</b> ' + ($('IA · Parsear y validar').first().json.propiedad_interes || '-') + '</li><li><b>Score:</b> ' + $('IA · Parsear y validar').first().json.score + '/100</li></ul><h3>Ultimo mensaje' + ($('IA · Parsear y validar').first().json.transcrito ? ' (nota de voz transcrita)' : '') + '</h3><blockquote style=\"border-left:3px solid #ccc;padding-left:10px;color:#444\">' + $('IA · Parsear y validar').first().json.mensaje_cliente + '</blockquote><hr><p style=\"color:#888;font-size:12px\">Se bloquearon 30 minutos en tu calendario.</p>' }}",
+        "options": {}
+      },
+      "id": "9c1c7455-b5e6-4d45-907a-5e59458da6d1",
+      "name": "Alerta · Correo alto valor",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        4180,
+        720
+      ],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "S54s9Lit3RPRfCqG",
+          "name": "Gmail OAuth2 API"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "={{ $('⚙️ CONFIG · Cliente').first().json.calendar_id }}",
+          "mode": "id"
+        },
+        "start": "={{ $now.plus({ minutes: 15 }).toISO() }}",
+        "end": "={{ $now.plus({ minutes: 45 }).toISO() }}",
+        "additionalFields": {
+          "summary": "={{ '🔴 LLAMAR — ' + ($('IA · Parsear y validar').first().json.lead.nombre || 'Lead alto valor') }}",
+          "description": "={{ 'Lead de alto valor. SLA ' + $('IA · Parsear y validar').first().json.sla_minutos + ' min. | Telefono: +' + $('IA · Parsear y validar').first().json.telefono + ' | Intencion: ' + $('IA · Parsear y validar').first().json.intencion + ' | Comuna: ' + ($('IA · Parsear y validar').first().json.lead.comuna || '-') + ' | Score: ' + $('IA · Parsear y validar').first().json.score + '/100 | Mensaje: ' + $('IA · Parsear y validar').first().json.mensaje_cliente }}"
+        }
+      },
+      "id": "7999d2e6-0c02-4bed-9f94-d8980e5cbada",
+      "name": "Alerta · Bloqueo agenda",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        4400,
+        720
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "ZlUKLjsLKqsUeTAn",
+          "name": "Google Calendar OAuth2 API"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('⚙️ CONFIG · Cliente').first().json.email_alice }}",
+        "subject": "🚨 Atención requerida — Agente WhatsApp Prohausen",
+        "message": "={{ '<h2 style=\"color:#c0392b\">⚠️ Conversación escalada a revisión humana</h2><p><b>Contacto:</b> ' + ($('IA · Parsear y validar').first().json.lead.nombre || 'No entregado') + '<br><b>Teléfono:</b> +' + $('IA · Parsear y validar').first().json.telefono + '<br><b>Intención:</b> ' + $('IA · Parsear y validar').first().json.intencion + '</p><h3>Último mensaje' + ($('IA · Parsear y validar').first().json.transcrito ? ' (nota de voz transcrita)' : '') + '</h3><blockquote style=\"border-left:3px solid #ccc;padding-left:10px;color:#444\">' + $('IA · Parsear y validar').first().json.mensaje_cliente + '</blockquote><p><b>Motivo:</b> ' + ($('IA · Parsear y validar').first().json.nota_interna || 'No especificado') + '</p><p>Ya le avisamos que lo llamas dentro de las próximas 2 horas.</p>' }}",
+        "options": {}
+      },
+      "id": "6e779e4a-f35a-435c-b55f-590cbd531f5b",
+      "name": "Escalar · Correo alerta",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        4180,
+        960
+      ],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "S54s9Lit3RPRfCqG",
+          "name": "Gmail OAuth2 API"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {},
+      "id": "4d5dcaf9-6426-4396-9b25-e2ae39bddd97",
+      "name": "Fin · Sin efectos",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        4180,
+        1160
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// OpenAI fallo (timeout, 4xx/5xx, red). Respuesta segura al contacto.\nconst msgData = $('Mensaje · Texto final').first().json;\nconst err = $input.first().json;\nreturn [{ json: {\n  telefono: msgData.telefono, wamid: msgData.wamid,\n  respuesta: 'Se me cayo el sistema un momento. Dame un par de minutos y me escribes de nuevo — o si prefieres, Alice te llama.',\n  workflow: 'prohausen-agente-whatsapp-v3', nodo: 'IA · OpenAI Chat', tipo_error: 'openai_error',\n  mensaje_error: String(err?.error?.message || err?.message || JSON.stringify(err || {})).slice(0, 300),\n  fecha: $now.toISO()\n} }];"
+      },
+      "id": "d3ac593d-657c-4d79-959a-b61fae87fe3d",
+      "name": "Error IA · Fallback",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2860,
+        1000
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/{{ $('⚙️ CONFIG · Cliente').first().json.graph_api_version }}/{{ $('⚙️ CONFIG · Cliente').first().json.whatsapp_phone_number_id }}/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ messaging_product: 'whatsapp', to: $json.telefono, type: 'text', text: { preview_url: false, body: $json.respuesta } }) }}",
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "id": "fa0981ae-8a7b-4ed3-bef0-93d84072964a",
+      "name": "WA · Responder [error técnico]",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3080,
+        920
+      ],
+      "credentials": {
+        "whatsAppApi": {
+          "id": "kmVgOQdR7nVKAxtJ",
+          "name": "WhatsApp account 2"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('⚙️ CONFIG · Cliente').first().json.sheet_id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Incidentes",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "fecha": "={{ $json.fecha }}",
+            "workflow": "={{ $json.workflow }}",
+            "nodo": "={{ $json.nodo }}",
+            "tipo_error": "={{ $json.tipo_error }}",
+            "mensaje": "={{ $json.mensaje_error }}",
+            "telefono": "={{ $json.telefono }}",
+            "resuelto": "no"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "workflow",
+              "displayName": "workflow",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nodo",
+              "displayName": "nodo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "tipo_error",
+              "displayName": "tipo_error",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "mensaje",
+              "displayName": "mensaje",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "telefono",
+              "displayName": "telefono",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "resuelto",
+              "displayName": "resuelto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ba8c7307-274e-4b8b-94b2-b351fa56edc4",
+      "name": "Error · Registrar incidente",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        3080,
+        1080
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ZPcI2oeMuojLvUyW",
+          "name": "Google Sheets OAuth2 API"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 8 * * 1-6"
+            }
+          ]
+        }
+      },
+      "id": "e37668f2-9484-45d8-91cc-3b57602923d4",
+      "name": "⏰ Brief · Lunes a sábado 08:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        1500
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b1",
+              "name": "sheet_id",
+              "value": "1tAm57CHAmdN1HgqTkogI7I0eOAaDUBoxabxmyQYdqzY",
+              "type": "string"
+            },
+            {
+              "id": "b2",
+              "name": "telefono_alice",
+              "value": "REEMPLAZAR_TELEFONO_ALICE",
+              "type": "string"
+            },
+            {
+              "id": "b3",
+              "name": "whatsapp_phone_number_id",
+              "value": "1120470911147248",
+              "type": "string"
+            },
+            {
+              "id": "b4",
+              "name": "graph_api_version",
+              "value": "v25.0",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": false,
+        "options": {}
+      },
+      "id": "435b6a76-a081-45ff-b931-957aa26749e6",
+      "name": "Brief · CONFIG",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        240,
+        1500
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Brief · CONFIG').first().json.sheet_id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Leads",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "id": "e92e54bd-95d6-4a8e-a33f-cdba18bbd5e2",
+      "name": "Brief · Leer leads",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        480,
+        1500
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ZPcI2oeMuojLvUyW",
+          "name": "Google Sheets OAuth2 API"
+        }
+      },
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Brief · CONFIG').first().json.sheet_id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Propiedades",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "id": "cc6f39a0-cdd4-4292-9852-7eb2659aef04",
+      "name": "Brief · Leer publicaciones",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        720,
+        1500
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ZPcI2oeMuojLvUyW",
+          "name": "Google Sheets OAuth2 API"
+        }
+      },
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Arma el mensaje matinal de Alice: llamados prioritarios + publicaciones por vencer.\nconst leads = $('Brief · Leer leads').all().map(i => i.json).filter(l => l && l.telefono);\nconst props = $('Brief · Leer publicaciones').all().map(i => i.json).filter(p => p && p.id);\nconst num = (v) => Number(String(v ?? '').replace(/[^0-9.]/g, '')) || 0;\nconst ahora = new Date();\nconst horas = (iso) => {\n  const t = Date.parse(iso || '');\n  return isNaN(t) ? 999 : (ahora - t) / 3600000;\n};\n\nconst recientes = leads.filter(l => horas(l.ultima_actualizacion) <= 48);\nconst cerrado = (l) => ['AGENDADO','CERRADO'].includes(String(l.estado).toUpperCase());\nconst agendados = recientes.filter(cerrado);\n\n// Cada lead aparece UNA sola vez, en el bloque de mayor prioridad.\nconst usados = new Set();\nconst tomar = (fn) => recientes.filter(l => {\n  if (usados.has(l.telefono) || cerrado(l)) return false;\n  if (!fn(l)) return false;\n  usados.add(l.telefono); return true;\n});\n\n// Orden de prioridad: captacion (inventario) > SLA vencido > alto valor\nconst captaciones = tomar(l => String(l.intencion).toLowerCase() === 'captacion');\nconst vencidos    = tomar(l => horas(l.ultima_actualizacion) * 60 > (num(l.sla_minutos) || 1440));\nconst altos       = tomar(l => String(l.nivel).toLowerCase() === 'alto');\nconst sinIntervencion = recientes.length - usados.size;\n\nconst vencido = (l) => horas(l.ultima_actualizacion) * 60 > (num(l.sla_minutos) || 1440);\nconst linea = (l) => {\n  const p = num(l.presupuesto_uf) ? 'UF ' + num(l.presupuesto_uf).toLocaleString('es-CL')\n          : (num(l.presupuesto_clp) ? '$' + num(l.presupuesto_clp).toLocaleString('es-CL') : 's/ presupuesto');\n  return '· ' + (l.nombre || 'Sin nombre') + ' — ' + (l.comuna || 's/ comuna') + ' — ' + p +\n         ' (score ' + (num(l.score) || 0) + ')' + (vencido(l) ? ' ⏰ SLA vencido' : '') +\n         '\\n  +' + l.telefono;\n};\n\nlet m = '*Buenos días, Alice* ☀️\\n_Tu resumen de hoy_\\n\\n';\n\nif (!recientes.length) {\n  m += 'No hay leads nuevos en las últimas 48 horas. Día tranquilo.';\n} else {\n  m += '📊 *' + recientes.length + ' leads* en las últimas 48 h\\n\\n';\n  if (captaciones.length) {\n    m += '🏡 *Captaciones* (' + captaciones.length + ') — esto es inventario, parte por acá\\n' +\n         captaciones.slice(0, 5).map(linea).join('\\n') + '\\n\\n';\n  }\n  if (vencidos.length) {\n    m += '🔴 *LLAMAR HOY — SLA vencido* (' + vencidos.length + ')\\n' +\n         vencidos.slice(0, 5).map(linea).join('\\n') + '\\n\\n';\n  }\n  if (altos.length) {\n    m += '⭐ *Alto valor* (' + altos.length + ')\\n' +\n         altos.slice(0, 5).map(linea).join('\\n') + '\\n\\n';\n  }\n  if (!vencidos.length && !captaciones.length && !altos.length) {\n    m += 'Nada urgente. El agente lo tiene todo cubierto.\\n\\n';\n  }\n  m += '✅ Agendados por el agente: *' + agendados.length + '*\\n';\n  m += '🤖 Sin necesidad de ti: *' + Math.max(0, sinIntervencion) + '*';\n}\n\n// ── Publicaciones por vencer: es trafico ya pagado que se pierde ──\nconst hoyISO = $now.toFormat('yyyy-MM-dd');\nconst diasHasta = (f) => {\n  const t = Date.parse(String(f || '') + 'T12:00:00Z');\n  if (isNaN(t)) return 9999;\n  return Math.round((t - Date.parse(hoyISO + 'T12:00:00Z')) / 86400000);\n};\nconst porVencer = props\n  .filter(p => String(p.estado || '').toLowerCase().indexOf('disponible') === 0)\n  .map(p => Object.assign({}, p, { dias: diasHasta(p.vence) }))\n  .filter(p => p.dias >= 0 && p.dias <= 15)\n  .sort((a, b) => a.dias - b.dias || num(b.visitas) - num(a.visitas));\n\nif (porVencer.length) {\n  m += '\\n\\n⏳ *Publicaciones por vencer* (' + porVencer.length + ')\\n';\n  m += porVencer.slice(0, 6).map(p => {\n    const precio = num(p.uf) ? 'UF ' + num(p.uf).toLocaleString('es-CL')\n                 : (num(p.clp) ? '$' + num(p.clp).toLocaleString('es-CL') : '');\n    const urg = p.dias <= 7 ? '🔴' : '🟡';\n    return urg + ' ' + p.dias + ' día' + (p.dias === 1 ? '' : 's') + ' — ' +\n           (p.titulo || p.id) + '\\n  ' + p.comuna + ' · ' + precio +\n           ' · ' + num(p.visitas).toLocaleString('es-CL') + ' visitas acumuladas';\n  }).join('\\n');\n  const top = porVencer[0];\n  if (num(top.visitas) >= 100) {\n    m += '\\n\\n_Ojo con la primera: son ' + num(top.visitas).toLocaleString('es-CL') +\n         ' visitas de tráfico ya pagado que se pierden si no la renuevas._';\n  }\n}\n\nreturn [{ json: { telefono_alice: $('Brief · CONFIG').first().json.telefono_alice, mensaje: m } }];"
+      },
+      "id": "f8be6e43-27ab-470f-9753-58cfb6c73886",
+      "name": "Brief · Armar resumen",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        1500
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/{{ $('Brief · CONFIG').first().json.graph_api_version }}/{{ $('Brief · CONFIG').first().json.whatsapp_phone_number_id }}/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.sin_destinatarios ? '{}' : JSON.stringify({ messaging_product: 'whatsapp', to: $json.telefono, type: 'text', text: { preview_url: false, body: $json.mensaje } }) }}",
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "id": "cc8923e5-455a-46bc-9b30-c92140bce46e",
+      "name": "Brief · Enviar a Alice",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1260,
+        1500
+      ],
+      "credentials": {
+        "whatsAppApi": {
+          "id": "kmVgOQdR7nVKAxtJ",
+          "name": "WhatsApp account 2"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "content": "## ⚠️ Por que NO hay un HTTP Request aca\n\nLa credencial de Google es **Managed OAuth2** (login de un clic de n8n Cloud).\nn8n **prohibe** usarla dentro de un nodo HTTP Request:\n\n> *This credential is configured to prevent use within an HTTP Request node*\n\nLa v3 leia todo con `values:batchGet` desde un HTTP Request. **Nunca leyo nada.**\n`lectura_ok` venia `false`, el `onError: continue` lo tapaba, y el agente\nrespondia sin memoria y sin stock con la ejecucion en verde.\n\nAhora son **3 lecturas nativas**, con la credencial que ya funciona:\n`EstadoConversacion` (filtrada) · `Propiedades` · `Reservas` (filtrada)\n\n`ValoresReferencia` va fijo en el codigo y el dedup usa el nodo\n**Remove Duplicates**, que recuerda los wamid sin tocar Sheets.",
+        "height": 340,
+        "width": 460
+      },
+      "id": "bdf73635-de77-4576-90fb-dfac29fd3bc2",
+      "name": "Nota 01",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## ⚠️ Por que NO hay un HTTP Request aca\n\nLa credencial de Google es **Managed OAuth2** (login de un clic de n8n Cloud).\nn8n **prohibe** usarla dentro de un nodo HTTP Request:\n\n> *This credential is configured to prevent use within an HTTP Request node*\n\nLa v3 leia todo con `values:batchGet` desde un HTTP Request. **Nunca leyo nada.**\n`lectura_ok` venia `false`, el `onError: continue` lo tapaba, y el agente\nrespondia sin memoria y sin stock con la ejecucion en verde.\n\nAhora son **3 lecturas nativas**, con la credencial que ya funciona:\n`EstadoConversacion` (filtrada) · `Propiedades` · `Reservas` (filtrada)\n\n`ValoresReferencia` va fijo en el codigo y el dedup usa el nodo\n**Remove Duplicates**, que recuerda los wamid sin tocar Sheets.",
+        "height": 230,
+        "width": 420
+      },
+      "id": "20591dbb-243e-452d-b5ac-5c9e4b86526d",
+      "name": "Nota 02",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1940,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## ⚡ El cambio #2 — responder primero\n\nEl contacto recibe la respuesta **apenas está lista**.\nGuardar el lead, el estado, el dedup, crear el evento y mandar los correos\nocurre **después**, y nadie lo espera.\n\nAntes había 5 nodos `WA · Responder`, uno por rama, todos al final.\nAhora hay **uno solo**, justo después de validar — el texto era el mismo en las cinco.",
+        "height": 210,
+        "width": 420
+      },
+      "id": "fa7c5c70-2afd-4d68-9c34-c91cae52ef1c",
+      "name": "Nota 03",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        3040,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Correcciones de Alice · 11-ago\n\n**Captación:** el cliente NO recibe ningún número. Se le pide la ficha de datos\nque ella dictó y Alice manda el análisis por correo. El rango se sigue\ncalculando pero viaja solo al correo interno.\n\n**Lead del Portal:** esa propiedad ancla la conversación. Comuna bloqueada y\nbanda de precio 0,55x–1,8x. Se acabó ofrecer UF 1.590 a quien pregunta por\nUF 18.990.\n\n**Anti-repetición:** si la respuesta se parece en más del 78% a algo ya dicho,\nse reemplaza por un cierre corto.",
+        "height": 150,
+        "width": 400
+      },
+      "id": "e7877c04-1f83-4526-b2d1-e8dd6b3697ef",
+      "name": "Nota 04",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2820,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Efectos por rama\n1. `agendar` → Sheets + Calendar (zona horaria de Chile) + correo con ficha\n2. `tasacion_lista` → Sheets + correo 🏷️\n3. `alto_valor` → correo 🔴 + bloqueo de 30 min en la agenda\n4. `escalar_humano` → correo 🚨\n5. default → nada, ya se respondió\n\nNinguno corta la cadena si falla (`onError: continue`).",
+        "height": 200,
+        "width": 420
+      },
+      "id": "d0fceed3-97ff-4090-87bd-17dcab1bd9bb",
+      "name": "Nota 05",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        3940,
+        1020
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## ☀️ Brief matinal\nLunes a sábado 08:00: captaciones, SLA vencidos, alto valor\ny **publicaciones por vencer** ordenadas por visitas acumuladas.\n\n**`telefono_alice` admite varios números separados por coma.**\n`Brief · Destinatarios` parte la lista y manda uno por uno — WhatsApp\nsolo acepta un destinatario por llamada.\n\nOjo: en el número de prueba, cada uno debe estar en la lista de\ndestinatarios permitidos de Meta (máximo 5).",
+        "height": 130,
+        "width": 420
+      },
+      "id": "ec7abea2-27f3-44dc-a9be-651e3904378e",
+      "name": "Nota 06",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        1320
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// GUARDA DE CONFIGURACION — falla RUIDOSAMENTE si el CONFIG quedo sin llenar.\n//\n// Por que existe: todos los nodos de WhatsApp tienen onError:continue, asi que\n// un phone_number_id malo se ve VERDE en Executions y el mensaje nunca sale.\n// Este nodo convierte ese fallo silencioso en una ejecucion roja y legible.\n//\n// Critico  -> tira error, corta la ejecucion.\n// Opcional -> solo avisa, el bot sigue funcionando degradado.\n\nconst cfg = $json || {};\nconst vacio = (v) => {\n  const s = String(v == null ? '' : v).trim();\n  return !s || /^REEMPLAZAR/i.test(s);\n};\n\nconst CRITICOS = [\n  ['sheet_id', 'sin esto no se lee ninguna hoja y el agente responde sin stock'],\n  ['whatsapp_phone_number_id', 'sin esto el bot NO puede responder — el mensaje muere en Graph'],\n];\nconst OPCIONALES = [\n  ['email_alice', 'no llegan las alertas de alto valor ni de tasacion'],\n  ['telefono_alice', 'no llega el brief matinal'],\n  ['calendar_id', 'no se crean los eventos de visita'],\n];\n\nconst rotos = [];\nfor (const [k, porque] of CRITICOS) {\n  if (vacio(cfg[k])) rotos.push(k + ' esta sin llenar — ' + porque);\n}\n\n// Chequeos de formato: atrapan el copy-paste a medias, que es peor que el vacio\n// porque parece configurado.\nconst pid = String(cfg.whatsapp_phone_number_id || '').trim();\nif (!vacio(pid) && !/^\\d{10,20}$/.test(pid)) {\n  rotos.push('whatsapp_phone_number_id debe ser solo digitos — llego: \"' + pid + '\"');\n}\nconst sid = String(cfg.sheet_id || '').trim();\nif (!vacio(sid) && !/^[A-Za-z0-9_-]{30,}$/.test(sid)) {\n  rotos.push('sheet_id no parece un ID de Google Sheets — llego: \"' + sid + '\"');\n}\nconst tel = String(cfg.telefono_alice || '').trim();\nif (!vacio(tel) && !/^\\d{9,15}$/.test(tel)) {\n  rotos.push('telefono_alice debe ser solo digitos, sin + ni espacios — llego: \"' + tel + '\"');\n}\n\nif (rotos.length) {\n  throw new Error(\n    'CONFIG INCOMPLETO — el bot no va a poder responder.\\n\\n' +\n    rotos.map(r => '  · ' + r).join('\\n') +\n    '\\n\\nArreglo: abre el nodo \"⚙️ CONFIG · Cliente\", completa esos campos, ' +\n    'Save y Publish.\\nOjo: re-importar el workflow los vuelve a dejar en REEMPLAZAR_*.'\n  );\n}\n\nconst avisos = OPCIONALES\n  .filter(([k]) => vacio(cfg[k]))\n  .map(([k, porque]) => k + ' — ' + porque);\n\n// Pasa todo tal cual (el CONFIG trae includeOtherFields, o sea el body de Meta).\nreturn [{ json: Object.assign({}, cfg, {\n  _config_ok: true,\n  _config_avisos: avisos,\n  _config_resumen: avisos.length\n    ? avisos.length + ' campo(s) opcional(es) sin llenar'\n    : 'CONFIG completo'\n}) }];"
+      },
+      "id": "d4a1efa4-bb4d-4342-b904-34b3d99261fd",
+      "name": "🔍 CONFIG · Verificar",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        330,
+        930
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// GUARDA DE ENVIO — confirma que Meta acepto el mensaje.\n//\n// El nodo anterior tiene onError:continue, o sea que un 400 o un 401 pasan\n// como si nada y la ejecucion queda verde. Aca se revisa la respuesta real:\n// si Meta no devolvio un wamid, el contacto NO recibio nada y hay que verlo.\n\nconst r = $json || {};\nconst wamid = (r.messages && r.messages[0] && r.messages[0].id) || '';\n\nif (wamid) {\n  // El mensaje salio. Pero si la lectura de Sheets fallo, el agente contesto a\n  // ciegas: sin memoria y sin stock. Eso NO puede verse verde en Executions.\n  const prep = $('Contexto · Preparar').first().json;\n  if (prep && prep.lectura_ok === false) {\n    throw new Error(\n      'LECTURA DE SHEETS CAIDA — el contacto recibio respuesta, pero a ciegas.\\n\\n' +\n      '  El agente contesto sin stock y sin memoria: no recuerda la conversacion\\n' +\n      '  ni puede nombrar propiedades reales.\\n\\n' +\n      '  Revisa los nodos \"Stock · Leer propiedades\" y \"Estado · Leer conversación\".\\n' +\n      '  Causa mas comun: la credencial de Google perdio la autorizacion.\\n\\n' +\n      '  Se marca en rojo a proposito. Antes esto se veia verde y por eso paso\\n' +\n      '  desapercibido toda la tarde del 6 de agosto.'\n    );\n  }\n  return [{ json: Object.assign({}, r, { _envio_ok: true, wamid_enviado: wamid,\n                                         _lectura_ok: true }) }];\n}\n\nconst err  = r.error || (r.body && r.body.error) || {};\nconst code = err.code != null ? err.code : (r.code != null ? r.code : '');\nconst sub  = err.error_subcode || '';\nlet msg    = err.message || r.message || '';\nif (!msg) { try { msg = JSON.stringify(r).slice(0, 400); } catch (e) { msg = String(r); } }\n\nconst PISTAS = {\n  190: 'token invalido o expirado → revisa la credencial \"WhatsApp account 2\" en n8n',\n  200: 'al token le falta el permiso whatsapp_business_messaging',\n  100: 'phone_number_id incorrecto, o la app no esta asignada al usuario del sistema',\n  131030: 'ese numero no esta en la lista de destinatarios de prueba de Meta',\n  131047: 'pasaron mas de 24 h desde el ultimo mensaje del contacto — hace falta una plantilla',\n  131026: 'el numero destino no tiene WhatsApp o no puede recibir mensajes',\n  368: 'la cuenta esta temporalmente bloqueada por politicas de Meta',\n};\n\nthrow new Error(\n  'WHATSAPP NO ENVIO EL MENSAJE' + (code !== '' ? ' (codigo ' + code + (sub ? '/' + sub : '') + ')' : '') + '\\n\\n' +\n  '  ' + msg + '\\n' +\n  (PISTAS[code] ? '  → ' + PISTAS[code] + '\\n' : '') +\n  '\\nEl contacto NO recibio nada. La ejecucion se marca en rojo a proposito: ' +\n  'sin esta guarda se veria verde.'\n);"
+      },
+      "id": "295c565b-c783-4983-b288-599566492c97",
+      "name": "🔍 Envío · Verificar",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3190,
+        840
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 🔍 Guardas (nuevo en v4)\n\n**`CONFIG · Verificar`** corta la ejecucion si `sheet_id` o\n`whatsapp_phone_number_id` quedaron en `REEMPLAZAR_*` o con formato malo.\nTambien avisa (sin cortar) si faltan los opcionales.\n\n**`Envio · Verificar`** revisa que Meta haya devuelto un `wamid`.\nSi no, tira error con el codigo y la causa probable.\n\n**Por que:** todos los nodos de WhatsApp tienen `onError: continue`, asi que\nsin estas guardas un envio fallido **se ve verde en Executions**.\nEso fue exactamente lo que paso el 6 de agosto.",
+        "height": 300,
+        "width": 460,
+        "color": 3
+      },
+      "id": "37706d7c-3621-465d-9ee6-425b89c8d23e",
+      "name": "Nota 07",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2960,
+        1000
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "removeItemsSeenInPreviousExecutions",
+        "logic": "removeItemsWithAlreadySeenKeyValues",
+        "dedupeValue": "={{ $json.wamid }}",
+        "options": {
+          "historySize": 5000
+        }
+      },
+      "id": "7cfeba79-47cf-422a-997f-8320884018ef",
+      "name": "Dedup · wamid (local)",
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        1740,
+        760
+      ],
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('⚙️ CONFIG · Cliente').first().json.sheet_id }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "EstadoConversacion"
+        },
+        "options": {},
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "telefono",
+              "lookupValue": "={{ $('Mensaje · Texto final').first().json.telefono }}"
+            }
+          ]
+        }
+      },
+      "id": "fbaee3e7-ba53-4a74-aed0-00138bda71f5",
+      "name": "Estado · Leer conversación",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1980,
+        760
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ZPcI2oeMuojLvUyW",
+          "name": "Google Sheets OAuth2 API"
+        }
+      },
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('⚙️ CONFIG · Cliente').first().json.sheet_id }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Propiedades"
+        },
+        "options": {}
+      },
+      "id": "1ef82157-9717-4301-8a36-76252f7db027",
+      "name": "Stock · Leer propiedades",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        2180,
+        760
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ZPcI2oeMuojLvUyW",
+          "name": "Google Sheets OAuth2 API"
+        }
+      },
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('⚙️ CONFIG · Cliente').first().json.sheet_id }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Reservas"
+        },
+        "options": {},
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "telefono",
+              "lookupValue": "={{ $('Mensaje · Texto final').first().json.telefono }}"
+            }
+          ]
+        }
+      },
+      "id": "6ad51cf4-7c27-46e5-8b4d-1d3cc89f4d16",
+      "name": "Reservas · Leer del contacto",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        2380,
+        760
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ZPcI2oeMuojLvUyW",
+          "name": "Google Sheets OAuth2 API"
+        }
+      },
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "f1",
+              "leftValue": "={{ $('IA · Parsear y validar').first().json.ficha_con_foto }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "e06413a5-334a-4978-9b43-6ac10580e928",
+      "name": "¿La ficha tiene foto?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        3480,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/{{ $('⚙️ CONFIG · Cliente').first().json.graph_api_version }}/{{ $('⚙️ CONFIG · Cliente').first().json.whatsapp_phone_number_id }}/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ messaging_product: 'whatsapp', to: $('IA · Parsear y validar').first().json.telefono, type: 'text', text: { preview_url: true, body: $('IA · Parsear y validar').first().json.ficha.texto } }) }}",
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "id": "b5145d98-0fb6-456e-a98b-58801a8851d4",
+      "name": "WA · Enviar ficha [texto]",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3700,
+        510
+      ],
+      "credentials": {
+        "whatsAppApi": {
+          "id": "kmVgOQdR7nVKAxtJ",
+          "name": "WhatsApp account 2"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Reparte el brief entre todos los numeros de telefono_alice.\n// WhatsApp acepta UN destinatario por llamada, asi que aca se emite un item por\n// numero y el nodo HTTP corre una vez por cada uno.\nconst cfg = $('Brief · CONFIG').first().json;\nconst mensaje = $json.mensaje || '';\n\n// Se corta SOLO por coma, punto y coma o salto de linea. Por espacios no:\n// \"+56 9 3219 1799\" es un numero escrito como lo escribe cualquiera, no cuatro.\nconst numeros = String(cfg.telefono_alice || '')\n  .split(/[,;\\n]+/)\n  .map(s => s.replace(/\\D/g, ''))\n  .filter(s => s.length >= 9 && s.length <= 15);\n\nconst unicos = [...new Set(numeros)];\n\n// Sin destinatarios validos no se manda nada, pero se deja dicho por que.\nif (!unicos.length) {\n  return [{ json: {\n    sin_destinatarios: true,\n    motivo: 'telefono_alice vacio o mal escrito: \"' + (cfg.telefono_alice || '') + '\"',\n    mensaje\n  } }];\n}\n\nreturn unicos.map(t => ({ json: { telefono: t, mensaje, total: unicos.length } }));"
+      },
+      "id": "e2ed30b8-369d-440d-aade-ad00c48bf452",
+      "name": "Brief · Destinatarios",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1020,
+        1500
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "GET · Verificación Meta": {
+      "main": [
+        [
+          {
+            "node": "GET · ¿Token válido?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET · ¿Token válido?": {
+      "main": [
+        [
+          {
+            "node": "GET · Responder challenge",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "GET · Responder 403",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "POST · Webhook Meta": {
+      "main": [
+        [
+          {
+            "node": "POST · ACK 200",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "⚙️ CONFIG · Cliente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⚙️ CONFIG · Cliente": {
+      "main": [
+        [
+          {
+            "node": "🔍 CONFIG · Verificar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validar y Extraer Mensaje": {
+      "main": [
+        [
+          {
+            "node": "¿Mensaje procesable?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Mensaje procesable?": {
+      "main": [
+        [
+          {
+            "node": "¿Es nota de voz?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fin · Payload descartado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Es nota de voz?": {
+      "main": [
+        [
+          {
+            "node": "Audio · URL del media",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mensaje · Texto final",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Audio · URL del media": {
+      "main": [
+        [
+          {
+            "node": "Audio · Descargar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Audio · Descargar": {
+      "main": [
+        [
+          {
+            "node": "Audio · Transcribir [Whisper]",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Audio · Transcribir [Whisper]": {
+      "main": [
+        [
+          {
+            "node": "Mensaje · Texto final",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mensaje · Texto final": {
+      "main": [
+        [
+          {
+            "node": "Dedup · wamid (local)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Contexto · Preparar": {
+      "main": [
+        [
+          {
+            "node": "¿Mensaje duplicado?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Mensaje duplicado?": {
+      "main": [
+        [
+          {
+            "node": "Fin · Mensaje duplicado",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "IA · OpenAI Chat",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IA · OpenAI Chat": {
+      "main": [
+        [
+          {
+            "node": "IA · Parsear y validar",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error IA · Fallback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IA · Parsear y validar": {
+      "main": [
+        [
+          {
+            "node": "⚡ WA · Responder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⚡ WA · Responder": {
+      "main": [
+        [
+          {
+            "node": "🔍 Envío · Verificar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar · wamid": {
+      "main": [
+        [
+          {
+            "node": "Guardar · conversación",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar · conversación": {
+      "main": [
+        [
+          {
+            "node": "Guardar · lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar · lead": {
+      "main": [
+        [
+          {
+            "node": "Switch · Acción",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch · Acción": {
+      "main": [
+        [
+          {
+            "node": "Agenda · Código y evento",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Tasación · Registrar",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Alerta · Correo alto valor",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Escalar · Correo alerta",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fin · Sin efectos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agenda · Código y evento": {
+      "main": [
+        [
+          {
+            "node": "Agenda · Registrar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agenda · Registrar": {
+      "main": [
+        [
+          {
+            "node": "Agenda · Evento [Calendar]",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agenda · Evento [Calendar]": {
+      "main": [
+        [
+          {
+            "node": "Agenda · Correo Alice",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tasación · Registrar": {
+      "main": [
+        [
+          {
+            "node": "Tasación · Correo Alice",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Alerta · Correo alto valor": {
+      "main": [
+        [
+          {
+            "node": "Alerta · Bloqueo agenda",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error IA · Fallback": {
+      "main": [
+        [
+          {
+            "node": "WA · Responder [error técnico]",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Error · Registrar incidente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⏰ Brief · Lunes a sábado 08:00": {
+      "main": [
+        [
+          {
+            "node": "Brief · CONFIG",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brief · CONFIG": {
+      "main": [
+        [
+          {
+            "node": "Brief · Leer leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brief · Leer leads": {
+      "main": [
+        [
+          {
+            "node": "Brief · Leer publicaciones",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brief · Leer publicaciones": {
+      "main": [
+        [
+          {
+            "node": "Brief · Armar resumen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brief · Armar resumen": {
+      "main": [
+        [
+          {
+            "node": "Brief · Destinatarios",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔍 CONFIG · Verificar": {
+      "main": [
+        [
+          {
+            "node": "Validar y Extraer Mensaje",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔍 Envío · Verificar": {
+      "main": [
+        [
+          {
+            "node": "¿Mandar ficha?",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Guardar · wamid",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dedup · wamid (local)": {
+      "main": [
+        [
+          {
+            "node": "Estado · Leer conversación",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Estado · Leer conversación": {
+      "main": [
+        [
+          {
+            "node": "Stock · Leer propiedades",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Stock · Leer propiedades": {
+      "main": [
+        [
+          {
+            "node": "Reservas · Leer del contacto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reservas · Leer del contacto": {
+      "main": [
+        [
+          {
+            "node": "Contexto · Preparar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Mandar ficha?": {
+      "main": [
+        [
+          {
+            "node": "¿La ficha tiene foto?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fin · Sin ficha",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿La ficha tiene foto?": {
+      "main": [
+        [
+          {
+            "node": "WA · Enviar ficha [imagen]",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "WA · Enviar ficha [texto]",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brief · Destinatarios": {
+      "main": [
+        [
+          {
+            "node": "Brief · Enviar a Alice",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timezone": "America/Santiago",
+    "availableInMCP": false
+  },
+  "versionId": "79659ef8-c2fb-4e23-a027-c0903e04e33d",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "nodeGroups": [],
+  "id": "5e2374adef7c44d5",
+  "tags": []
+}
